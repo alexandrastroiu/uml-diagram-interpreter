@@ -3,6 +3,7 @@ package model.diagrams;
 import model.elements.State;
 import model.relationships.Transition;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class StateDiagram extends UmlDiagram {
@@ -14,6 +15,21 @@ public class StateDiagram extends UmlDiagram {
     private int joinCount;
     private int choiceStates;
     private int compositeStates;
+
+    // Constructor
+
+    public StateDiagram () {
+        super();
+        this.states = new HashSet<State>();
+        this.transitions = new HashSet<Transition>();
+        this.transitionCount = 0;
+        this.forkCount = 0;
+        this.joinCount = 0;
+        this.choiceStates = 0;
+        this.compositeStates = 0;
+    }
+
+    // Getters, setters
 
     public Set<State> getStates() {
         return states;
