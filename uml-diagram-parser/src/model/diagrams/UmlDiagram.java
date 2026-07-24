@@ -11,6 +11,18 @@ public class UmlDiagram {
     private int relationships;
     private int linesCount;
 
+    // Constructor
+
+    public UmlDiagram() {
+        this.language = Language.UNKNOWN;
+        this.type = DiagramType.UNKOWN;
+        this.elements = 0;
+        this.relationships = 0;
+        this.linesCount = 0;
+    }
+
+    // Setters, Getters
+
     public Language getLanguage() {
         return language;
     }
