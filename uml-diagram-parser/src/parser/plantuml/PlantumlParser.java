@@ -74,7 +74,7 @@ public class PlantumlParser implements DiagramParser {
 
                     if (Pattern.matches(longNamePattern, trimmedLine)) {
                         int index2 = trimmedLine.indexOf(descriptionPattern);
-                        int index3 = index2 + longNamePattern.length();
+                        int index3 = index2 + descriptionPattern.length();
 
                         String description = trimmedLine.substring(index1, index2).trim();
                         name = trimmedLine.substring(index3).trim();
@@ -140,7 +140,7 @@ public class PlantumlParser implements DiagramParser {
                         name = trimmedLine.substring(indexStateEnd).trim();
                     }
 
-                    if (name.endsWith(finalPattern)) {
+                    if (name.endsWith(finalPattern.trim())) {
                         endState.setName("Final State");
                         endState.setType(StateType.FINAL);
                     } else {
