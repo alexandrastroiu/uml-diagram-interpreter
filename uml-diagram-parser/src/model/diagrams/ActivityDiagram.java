@@ -18,6 +18,8 @@ public class ActivityDiagram extends UmlDiagram {
     private int mergeCount;
     private int conditionalNodes;
 
+    // Setters, Getters
+
     public Set<ActivityNode> getActivities() {
         return activities;
     }
