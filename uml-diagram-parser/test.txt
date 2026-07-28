@@ -1,7 +1,59 @@
 @startuml
-[*] --> NotShooting
-state NotShooting {
-[*] --> Idle
-Idle --> Configuring : EvConfig
+hide empty description
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #F8F9FB
+  BorderColor #3A4A5B
+  ArrowColor #3A4A5B
 }
+
+[*] --> Idle
+
+Idle --> CardInserted : insertCard
+CardInserted --> ReadingCard : read card
+
+ReadingCard --> PinEntry : card valid
+ReadingCard --> EjectingCard : card unreadable / invalid
+
+PinEntry --> Authenticating : submit PIN
+
+Authenticating --> TransactionSelection : PIN valid
+Authenticating --> PinEntry : PIN invalid [attempts < 3]
+Authenticating --> RetainingCard : PIN invalid [attempts >= 3]
+
+TransactionSelection --> ProcessingWithdrawal : select withdrawal
+TransactionSelection --> ProcessingDeposit : select deposit
+TransactionSelection --> ProcessingBalanceInquiry : select balance inquiry
+TransactionSelection --> EjectingCard : cancel
+
+ProcessingWithdrawal --> DispensingCash : approved and funds available
+ProcessingWithdrawal --> TransactionSelection : declined / insufficient funds
+
+DispensingCash --> PrintingReceipt : cash dispensed
+
+ProcessingDeposit --> AcceptingDeposit : request deposit
+AcceptingDeposit --> PrintingReceipt : deposit accepted
+AcceptingDeposit --> TransactionSelection : deposit failed
+
+ProcessingBalanceInquiry --> DisplayingBalance : balance retrieved
+DisplayingBalance --> PrintingReceipt : print receipt
+DisplayingBalance --> AnotherTransaction : skip receipt
+
+PrintingReceipt --> AnotherTransaction : receipt printed
+
+AnotherTransaction --> TransactionSelection : another transaction = yes
+AnotherTransaction --> EjectingCard : another transaction = no
+
+EjectingCard --> Idle : card removed
+
+RetainingCard --> OutOfService : card retained / alert bank
+OutOfService --> Idle : reset by operator
+
+CardInserted --> EjectingCard : timeout
+PinEntry --> EjectingCard : timeout / cancel
+TransactionSelection --> EjectingCard : timeout
+
+Idle --> [*] : shutdown
+
 @enduml
