@@ -57,7 +57,7 @@ public class PlantumlParser implements DiagramParser {
         String colorPattern = " #";
         String compositePattern = " {";
         String longNamePattern = "^state [\\s\\S]+ as [\\s\\S]+$";
-        String transitionPattern = "^[\\s\\S]+ -[a-zA-Z,#\\[\\]]*-> [\\s\\S]+$";
+        String transitionPattern = "^[\\s\\S]+ -[a-zA-Z0-9,#\\[\\]]*-> [\\s\\S]+$";
         String startPattern = " -";
         String endPattern = "-> ";
         String stateDescription = " :";
