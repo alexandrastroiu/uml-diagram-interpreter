@@ -20,7 +20,7 @@ public class LanguageDetector {
                     return Language.PLANTUML;
                 }
 
-                if (Pattern.matches("\\bflowchart (TB|TD|BT|RL|LR)\\b", trimmedLine) || Pattern.matches("\\bstateDiagram(-v2)?\\b", trimmedLine)) {
+                if (Pattern.matches("^flowchart\\s+(TB|TD|BT|RL|LR)\\s*$", trimmedLine) || Pattern.matches("^stateDiagram(-v2)?\\s*$", trimmedLine)) {
                     return Language.MERMAID;
                 }
             }

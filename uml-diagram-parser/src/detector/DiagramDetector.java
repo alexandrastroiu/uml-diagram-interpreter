@@ -18,15 +18,15 @@ public class DiagramDetector {
                 if (!line.isBlank()) {
                     String trimmedLine = line.trim();
 
-                    if (trimmedLine.contains("[*]") || Pattern.matches("\\bstate \\S+\\b", trimmedLine)) {
+                    if (trimmedLine.contains("[*]") || Pattern.matches("^state\\s+\\S+.*$", trimmedLine)) {
                         return DiagramType.STATE;
                     }
 
-                    if (trimmedLine.equals("start") || trimmedLine.equals("stop") || trimmedLine.equals("end") || Pattern.matches("\\b(#[a-z]+|-#\\[[a-z]+,?[a-z]+\\]):.+;\\b", trimmedLine)) {
+                    if (trimmedLine.equals("start") || trimmedLine.equals("stop") || trimmedLine.equals("end") || Pattern.matches("^(#[A-Za-z]+|#[A-Za-z]+\\[A-Za-z]+|#[A-F]{6})?:[^;]+;\\s+$", trimmedLine)) {
                         return DiagramType.ACTIVITY;
                     }
 
-                    if (Pattern.matches("\\b(actor|usecase) \\S+\\b", trimmedLine) || Pattern.matches(".+\\(\\w+.*\\).+", trimmedLine)) {
+                    if (Pattern.matches("^(actor|usecase)\\s+\\S+.*$", trimmedLine) || Pattern.matches("^.+\\([\\S\\s]+\\).+$", trimmedLine)) {
                         return DiagramType.USECASE;
                     }
                 }
@@ -37,11 +37,11 @@ public class DiagramDetector {
             for (String line : lines) {
                 if (!line.isBlank()) {
                     String trimmedLine = line.trim();
-                    if (Pattern.matches("\\bflowchart (TB|TD|BT|RL|LR)\\b", trimmedLine)) {
+                    if (Pattern.matches("^flowchart\\s+(TB|TD|BT|RL|LR)\\s*$", trimmedLine)) {
                         return DiagramType.ACTIVITY; //TODO
-                    } else if (Pattern.matches("\\bflowchart (TB|TD|BT|RL|LR)\\b", trimmedLine)) {
+                    } else if (Pattern.matches("^flowchart\\s+(TB|TD|BT|RL|LR)\\s*$", trimmedLine)) {
                         return DiagramType.USECASE; //TODO
-                    } else if (Pattern.matches("\\bstateDiagram(-v2)?\\b", trimmedLine)) {
+                    } else if (Pattern.matches("^stateDiagram(-v2)?\\s*$", trimmedLine)) {
                         return DiagramType.STATE;
                     }
                 }
