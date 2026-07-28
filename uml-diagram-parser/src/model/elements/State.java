@@ -54,4 +54,16 @@ public class State {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public void updateState(State state) {
+        if (this.name.equals(state.getName())) {
+            if (!state.getType().equals(StateType.SIMPLE) && !state.getType().equals(this.type)) {
+                setType(state.getType());
+            }
+
+            if (!state.getDescription().isEmpty() && !state.getDescription().equals(this.description)) {
+                setDescription(state.getDescription());
+            }
+        }
+    }
 }
