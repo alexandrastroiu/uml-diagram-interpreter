@@ -5,6 +5,24 @@ import enums.ActivityNodeType;
 public class ActivityNode {
     private String name;
     private ActivityNodeType type;
+    private String swimlane;
+    private String group;
+
+    // Constructor
+
+    public ActivityNode() {
+        this.name = "";
+        this.type = ActivityNodeType.ACTIVITY;
+        this.swimlane = "";
+        this.group = "";
+    }
+
+    public ActivityNode(String name, ActivityNodeType type) {
+        this.name = name;
+        this.type = type;
+    }
+
+    // Getters, setters
 
     public String getName() {
         return name;
@@ -20,5 +38,21 @@ public class ActivityNode {
 
     public void setType(ActivityNodeType type) {
         this.type = type;
+    }
+
+    public String getSwimlane() {
+        return swimlane;
+    }
+
+    public void setSwimlane(String swimlane) {
+        this.swimlane = swimlane;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 }
