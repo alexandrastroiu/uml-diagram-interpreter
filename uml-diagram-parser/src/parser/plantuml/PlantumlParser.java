@@ -1,10 +1,13 @@
 package parser.plantuml;
 
+import enums.ActivityNodeType;
 import enums.DiagramType;
 import enums.Language;
 import enums.StateType;
+import model.diagrams.ActivityDiagram;
 import model.diagrams.StateDiagram;
 import model.diagrams.UmlDiagram;
+import model.elements.ActivityNode;
 import model.elements.State;
 import model.relationships.Transition;
 import parser.DiagramParser;
@@ -24,10 +27,8 @@ public class PlantumlParser implements DiagramParser {
                 case STATE:
                     return parseStateDiagram(lines);
                 case ACTIVITY:
-                    //TODO
-                    break;
+                    return parseActivityDiagram(lines);
                 case USECASE:
-                    //TODO
                     break;
                 default:
                     return umlDiagram;
@@ -35,6 +36,8 @@ public class PlantumlParser implements DiagramParser {
         }
         return umlDiagram;
     }
+
+    // Interpreteaza diagrama de stare
 
     public StateDiagram parseStateDiagram(List<String> lines) {
         StateDiagram stateDiagram = new StateDiagram();
@@ -67,6 +70,7 @@ public class PlantumlParser implements DiagramParser {
                 String trimmedLine = line.trim();
 
                 // Stare
+
                 if (trimmedLine.startsWith(statePattern)) {
                     State state = new State();
                     int index1 = statePattern.length();
@@ -85,7 +89,6 @@ public class PlantumlParser implements DiagramParser {
                     if (trimmedLine.endsWith(compositePattern)) {
                         int index6 = name.indexOf(compositePattern);
                         name = name.substring(0, index6).trim();
-                        //TODO Substates
 
                         state.setType(StateType.COMPOSITE);
                     }
@@ -109,6 +112,7 @@ public class PlantumlParser implements DiagramParser {
                 }
 
                 // Tranzitie
+
                 if (Pattern.matches(transitionPattern, trimmedLine)) {
                     Transition transition = new Transition();
                     State startState = new State();
@@ -164,6 +168,66 @@ public class PlantumlParser implements DiagramParser {
         stateDiagram.setElements(stateDiagram.countElements());
 
         return stateDiagram;
+    }
+
+    public ActivityDiagram parseActivityDiagram(List<String> lines) {
+        //TODO
+        ActivityDiagram activityDiagram = new ActivityDiagram();
+        activityDiagram.setLanguage(Language.PLANTUML);
+        activityDiagram.setType(DiagramType.ACTIVITY);
+        activityDiagram.setLinesCount(lines.size());
+
+        String startPattern = "start";
+        List<String> endPattern = List.of("stop", "end");
+        String conditionalPattern = "^[\\s\\S]*(if|elseif)[\\s\\S]+then[\\s\\S]+$";
+        String switchPattern = "switch\\s+([\\s\\S]+)\\s+";
+        String labelPattern = ""; //TODO
+        String forkPattern = "^fork[\\s\\S]*$";
+        String mergePattern = "^end\\s+merge\\s*$";
+        String swimlanePattern = "^|\\S+[\\s\\S]*|[\\s\\S]*$";
+        String groupPattern = "^group[\\s\\S]+$";
+        String partitionPattern = "^(partition|package|rectangle|card)[\\s\\S]+{\\s+$";
+
+        String currentSwimlane = null;
+
+        //TODO
+        for (String line : lines) {
+            if (!line.isBlank()) {
+                String trimmedLine = line.trim();
+
+                if (trimmedLine.equals(startPattern)) {
+                    ActivityNode startNode = new ActivityNode("Start", ActivityNodeType.START);
+                    activityDiagram.getActivities().add(startNode);
+                }
+
+                if (trimmedLine.equals(endPattern.get(0)) || trimmedLine.equals(endPattern.get(1))) {
+                    ActivityNode endNode = new ActivityNode("Stop", ActivityNodeType.STOP);
+                    activityDiagram.getActivities().add(endNode);
+                }
+
+                if (Pattern.matches(forkPattern, trimmedLine)) {
+                    ActivityNode forkNode = new ActivityNode("Fork", ActivityNodeType.FORK);
+                    activityDiagram.getActivities().add(forkNode);
+                }
+
+                if (Pattern.matches(switchPattern, trimmedLine) || Pattern.matches(conditionalPattern, trimmedLine)) {
+                    ActivityNode conditionalNode = new ActivityNode("Switch", ActivityNodeType.CONDITIONAL);
+                    activityDiagram.getActivities().add(conditionalNode);
+                }
+
+                if (Pattern.matches(mergePattern, trimmedLine)) {
+                    ActivityNode mergeNode = new ActivityNode("Merge", ActivityNodeType.MERGE);
+                    activityDiagram.getActivities().add(mergeNode);
+                }
+
+                if (Pattern.matches(swimlanePattern, trimmedLine)) {
+                    activityDiagram.getSwimlanes().add(""); // TODO
+                    currentSwimlane = "";
+                }
+            }
+        }
+
+        return activityDiagram;
     }
 
 }
