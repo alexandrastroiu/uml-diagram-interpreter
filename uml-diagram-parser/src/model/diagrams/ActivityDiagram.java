@@ -3,6 +3,7 @@ package model.diagrams;
 import model.elements.ActivityNode;
 import model.relationships.ControlFlow;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class ActivityDiagram extends UmlDiagram {
@@ -18,7 +19,23 @@ public class ActivityDiagram extends UmlDiagram {
     private int mergeCount;
     private int conditionalNodes;
 
-    // Setters, Getters
+    // Constructor
+
+    public ActivityDiagram() {
+        super();
+        activities = new HashSet<>();
+        swimlanes = new HashSet<>();
+        groups = new HashSet<>();
+        controlFlows = new HashSet<>();
+        activitiesCount = 0;
+        swimlanesCount = 0;
+        loops = 0;
+        forkCount = 0;
+        mergeCount = 0;
+        conditionalNodes = 0;
+    }
+
+    // Getters, setters
 
     public Set<ActivityNode> getActivities() {
         return activities;
