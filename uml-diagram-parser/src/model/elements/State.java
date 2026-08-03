@@ -21,7 +21,7 @@ public class State {
         this.substates = new HashSet<State>();
     }
 
-    // Setters, Getters
+    // Getters, setters
 
     public String getName() {
         return name;

@@ -21,7 +21,7 @@ public class UmlDiagram {
         this.linesCount = 0;
     }
 
-    // Setters, Getters
+    // Getters, setters
 
     public Language getLanguage() {
         return language;

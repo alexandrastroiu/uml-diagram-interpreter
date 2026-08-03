@@ -14,7 +14,7 @@ public class UseCaseDiagram extends UmlDiagram {
     private int actorsCount;
     private int linksCount;
 
-    // Setters, Getters
+    // Getters, setters
 
     public Set<UseCaseNode> getActors() {
         return actors;

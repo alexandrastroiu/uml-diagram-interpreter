@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 public class DiagramDetector {
 
     // Default Constructor
+
     public DiagramDetector() {}
 
     public DiagramType detectDiagramType(List<String> lines, Language language) {
@@ -38,9 +39,9 @@ public class DiagramDetector {
                 if (!line.isBlank()) {
                     String trimmedLine = line.trim();
                     if (Pattern.matches("^flowchart\\s+(TB|TD|BT|RL|LR)\\s*$", trimmedLine)) {
-                        return DiagramType.ACTIVITY; //TODO
+                        return DiagramType.ACTIVITY;
                     } else if (Pattern.matches("^flowchart\\s+(TB|TD|BT|RL|LR)\\s*$", trimmedLine)) {
-                        return DiagramType.USECASE; //TODO
+                        return DiagramType.USECASE;
                     } else if (Pattern.matches("^stateDiagram(-v2)?\\s*$", trimmedLine)) {
                         return DiagramType.STATE;
                     }

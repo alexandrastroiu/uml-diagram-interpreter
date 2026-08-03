@@ -10,6 +10,7 @@ import java.util.List;
 public class FileReader {
 
     // Default Constructor
+
     public FileReader() {}
 
     public List<String> readFileIntoList(String fileName) {

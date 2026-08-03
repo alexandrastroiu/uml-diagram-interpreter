@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 public class LanguageDetector {
 
     // Default Constructor
+
     public LanguageDetector() {}
 
     public Language detectDiagramLanguage(List<String> lines) {
