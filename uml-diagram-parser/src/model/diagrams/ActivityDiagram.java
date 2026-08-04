@@ -1,5 +1,6 @@
 package model.diagrams;
 
+import enums.ActivityNodeType;
 import model.elements.ActivityNode;
 import model.relationships.ControlFlow;
 
@@ -115,5 +116,9 @@ public class ActivityDiagram extends UmlDiagram {
 
     public void setConditionalNodes(int conditionalNodes) {
         this.conditionalNodes = conditionalNodes;
+    }
+
+    public void printActivities() {
+        this.activities.stream().filter(activity -> !activity.getType().equals(ActivityNodeType.FORK) && !activity.getType().equals(ActivityNodeType.MERGE) && !activity.getType().equals(ActivityNodeType.CONDITIONAL)).forEach(activity -> System.out.println(activity.getName() + " - " + activity.getType()));
     }
 }
