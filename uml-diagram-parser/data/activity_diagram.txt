@@ -1,0 +1,79 @@
+@startuml
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #F7F9FC
+  BorderColor #3A506B
+  DiamondBackgroundColor #FFF4CC
+  DiamondBorderColor #C18C00
+}
+
+title ATM Transaction Process
+
+start
+:Insert ATM card;
+:Read card data;
+
+if (Card valid?) then (Yes)
+  :Prompt for PIN;
+  :Enter PIN;
+  :Validate PIN;
+
+  if (PIN valid?) then (Yes)
+    :Display transaction menu;
+    :Select transaction type;
+
+    if (Withdrawal?) then (Yes)
+      :Enter withdrawal amount;
+      :Check account balance;
+
+      if (Sufficient funds?) then (Yes)
+        :Debit account;
+        :Dispense cash;
+        :Print receipt;
+      else (No)
+        :Display insufficient funds message;
+      endif
+
+    elseif (Deposit?) then (Yes)
+      :Enter deposit amount;
+      :Accept cash or check;
+      :Credit account;
+      :Print receipt;
+
+    elseif (Balance inquiry?) then (Yes)
+      :Retrieve account balance;
+      :Display balance;
+      :Print receipt;
+
+    else (Other)
+      :Display unsupported transaction message;
+    endif
+
+    :Ask whether another transaction is required;
+    if (Another transaction?) then (Yes)
+      repeat
+        :Display transaction menu;
+        :Process selected transaction;
+      repeat while (Another transaction?) is (Yes)
+    endif
+
+    :Eject card;
+
+  else (No)
+    :Increment failed PIN attempts;
+
+    if (Maximum attempts reached?) then (Yes)
+      :Retain card;
+      :Block session;
+    else (No)
+      :Eject card;
+    endif
+  endif
+
+else (No)
+  :Display invalid card message;
+  :Eject card;
+endif
+
+stop
+@enduml
