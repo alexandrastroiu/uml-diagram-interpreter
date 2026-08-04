@@ -181,14 +181,18 @@ public class PlantumlParser implements DiagramParser {
         List<String> endPattern = List.of("stop", "end");
         String conditionalPattern = "^[\\s\\S]*(if|elseif)[\\s\\S]+then[\\s\\S]+$";
         String switchPattern = "switch\\s+([\\s\\S]+)\\s+";
-        String labelPattern = ""; //TODO
+        String labelStart = "^\\s*:.+$";
+        String labelEnd = ";";
         String forkPattern = "^fork[\\s\\S]*$";
         String mergePattern = "^end\\s+merge\\s*$";
         String swimlanePattern = "^|\\S+[\\s\\S]*|[\\s\\S]*$";
         String groupPattern = "^group[\\s\\S]+$";
         String partitionPattern = "^(partition|package|rectangle|card)[\\s\\S]+{\\s+$";
 
+        final int CAPACITY = 50;
+        StringBuilder currentActivityLabel = new StringBuilder(CAPACITY);
         String currentSwimlane = null;
+        boolean readingActivityLabel = false;
 
         //TODO
         for (String line : lines) {
@@ -211,7 +215,7 @@ public class PlantumlParser implements DiagramParser {
                 }
 
                 if (Pattern.matches(switchPattern, trimmedLine) || Pattern.matches(conditionalPattern, trimmedLine)) {
-                    ActivityNode conditionalNode = new ActivityNode("Switch", ActivityNodeType.CONDITIONAL);
+                    ActivityNode conditionalNode = new ActivityNode("Condition", ActivityNodeType.CONDITIONAL);
                     activityDiagram.getActivities().add(conditionalNode);
                 }
 
@@ -220,10 +224,31 @@ public class PlantumlParser implements DiagramParser {
                     activityDiagram.getActivities().add(mergeNode);
                 }
 
-                if (Pattern.matches(swimlanePattern, trimmedLine)) {
+                if (Pattern.matches(labelStart, trimmedLine)) {
+                    if (!currentActivityLabel.isEmpty()) {
+                        currentActivityLabel.delete(0, currentActivityLabel.length());
+                    }
+                    readingActivityLabel = true;
+                }
+
+                if (readingActivityLabel) {
+                    currentActivityLabel.append(trimmedLine);
+                }
+
+                if (trimmedLine.endsWith(labelEnd)) {
+                    readingActivityLabel = false;
+                    currentActivityLabel.deleteCharAt(0);
+                    currentActivityLabel.deleteCharAt(currentActivityLabel.length() - 1);
+                    String activityName = currentActivityLabel.toString();
+                    ActivityNode activityNode = new ActivityNode(activityName, ActivityNodeType.ACTIVITY);
+                    activityDiagram.getActivities().add(activityNode);
+                }
+
+                /**if (Pattern.matches(swimlanePattern, trimmedLine)) {
                     activityDiagram.getSwimlanes().add(""); // TODO
                     currentSwimlane = "";
-                }
+                }**/
+
             }
         }
 
