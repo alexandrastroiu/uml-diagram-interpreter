@@ -121,7 +121,7 @@ public class StateDiagram extends UmlDiagram {
     }
 
     public void printStates() {
-        getStates().values().stream().forEach(state -> System.out.println(state.getName() + " - " + state.getType()));
+        getStates().values().stream().filter(state -> !state.getType().equals(StateType.FORK) &&  !state.getType().equals(StateType.JOIN) && !state.getType().equals(StateType.CHOICE)).forEach(state -> System.out.println(state.getName() + " - " + state.getType()));
     }
 
     public void printTransitions() {
