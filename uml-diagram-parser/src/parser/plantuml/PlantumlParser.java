@@ -180,18 +180,20 @@ public class PlantumlParser implements DiagramParser {
         String startPattern = "start";
         List<String> endPattern = List.of("stop", "end");
         String conditionalPattern = "^[\\s\\S]*(if|elseif)[\\s\\S]+then[\\s\\S]+$";
-        String switchPattern = "switch\\s+([\\s\\S]+)\\s+";
+        String switchPattern = "switch\\s+([\\s\\S]+)\\s*";
         String labelStart = "^\\s*:.+$";
         String labelEnd = ";";
         String forkPattern = "^fork[\\s\\S]*$";
         String mergePattern = "^end\\s+merge\\s*$";
-        String swimlanePattern = "^|\\S+[\\s\\S]*|[\\s\\S]*$";
-        String groupPattern = "^group[\\s\\S]+$";
-        String partitionPattern = "^(partition|package|rectangle|card)[\\s\\S]+{\\s+$";
+        String swimlanePattern = "^\\|[\\s\\S]+\\|$";
+        String groupPattern = "^(group|partition|package|rectangle|card)[\\s\\S]+\\{?\\s*$";
+        String groupEnd = "end group";
+        String partitionEnd = "}";
 
         final int CAPACITY = 50;
         StringBuilder currentActivityLabel = new StringBuilder(CAPACITY);
-        String currentSwimlane = null;
+        StringBuilder currentSwimlane = new StringBuilder(CAPACITY);
+        StringBuilder currentGroup = new StringBuilder(CAPACITY);
         boolean readingActivityLabel = false;
 
         //TODO
@@ -200,27 +202,27 @@ public class PlantumlParser implements DiagramParser {
                 String trimmedLine = line.trim();
 
                 if (trimmedLine.equals(startPattern)) {
-                    ActivityNode startNode = new ActivityNode("Start", ActivityNodeType.START);
+                    ActivityNode startNode = new ActivityNode("Start", ActivityNodeType.START, currentSwimlane.toString(), currentGroup.toString());
                     activityDiagram.getActivities().add(startNode);
                 }
 
                 if (trimmedLine.equals(endPattern.get(0)) || trimmedLine.equals(endPattern.get(1))) {
-                    ActivityNode endNode = new ActivityNode("Stop", ActivityNodeType.STOP);
+                    ActivityNode endNode = new ActivityNode("Stop", ActivityNodeType.STOP, currentSwimlane.toString(), currentGroup.toString());
                     activityDiagram.getActivities().add(endNode);
                 }
 
                 if (Pattern.matches(forkPattern, trimmedLine)) {
-                    ActivityNode forkNode = new ActivityNode("Fork", ActivityNodeType.FORK);
+                    ActivityNode forkNode = new ActivityNode("Fork", ActivityNodeType.FORK, currentSwimlane.toString(), currentGroup.toString());
                     activityDiagram.getActivities().add(forkNode);
                 }
 
                 if (Pattern.matches(switchPattern, trimmedLine) || Pattern.matches(conditionalPattern, trimmedLine)) {
-                    ActivityNode conditionalNode = new ActivityNode("Condition", ActivityNodeType.CONDITIONAL);
+                    ActivityNode conditionalNode = new ActivityNode("Condition", ActivityNodeType.CONDITIONAL, currentSwimlane.toString(), currentGroup.toString());
                     activityDiagram.getActivities().add(conditionalNode);
                 }
 
                 if (Pattern.matches(mergePattern, trimmedLine)) {
-                    ActivityNode mergeNode = new ActivityNode("Merge", ActivityNodeType.MERGE);
+                    ActivityNode mergeNode = new ActivityNode("Merge", ActivityNodeType.MERGE, currentSwimlane.toString(), currentGroup.toString());
                     activityDiagram.getActivities().add(mergeNode);
                 }
 
@@ -241,13 +243,32 @@ public class PlantumlParser implements DiagramParser {
                     currentActivityLabel.deleteCharAt(currentActivityLabel.length() - 1);
                     String activityName = currentActivityLabel.toString();
                     ActivityNode activityNode = new ActivityNode(activityName, ActivityNodeType.ACTIVITY);
+                    activityNode.setSwimlane(currentSwimlane.toString());
                     activityDiagram.getActivities().add(activityNode);
                 }
 
-                /**if (Pattern.matches(swimlanePattern, trimmedLine)) {
-                    activityDiagram.getSwimlanes().add(""); // TODO
-                    currentSwimlane = "";
-                }**/
+                if (Pattern.matches(swimlanePattern, trimmedLine)) {
+                    activityDiagram.getSwimlanes().add("");
+
+                    if (!currentSwimlane.isEmpty()) {
+                        currentSwimlane.delete(0, currentActivityLabel.length());
+                    }
+                    currentSwimlane.append(trimmedLine);
+                    currentSwimlane.deleteCharAt(0);
+                    currentSwimlane.deleteCharAt(currentSwimlane.length() - 1);
+                    String swimlaneName = currentSwimlane.toString();
+                    activityDiagram.getSwimlanes().add(swimlaneName);
+                }
+
+                if (Pattern.matches(groupPattern, trimmedLine)) {
+                    String groupName = trimmedLine.replaceFirst("^(group|partition|package|rectangle|card)", "").replace("{", "").trim();
+                    currentGroup.append(groupName);
+                    activityDiagram.getGroups().add(currentGroup.toString());
+                }
+
+                if (trimmedLine.contains(groupEnd) || trimmedLine.contains(partitionEnd)) {
+                    currentGroup.delete(0, currentGroup.length());
+                }
 
             }
         }
