@@ -9,7 +9,7 @@ import java.util.*;
 public class StateDiagram extends UmlDiagram {
 
     private LinkedHashMap<String, State> states;
-    private Set<Transition> transitions;
+    private LinkedHashSet<Transition> transitions;
     private int transitionCount;
     private int forkCount;
     private int joinCount;
@@ -21,7 +21,7 @@ public class StateDiagram extends UmlDiagram {
     public StateDiagram () {
         super();
         this.states = new LinkedHashMap<>();
-        this.transitions = new HashSet<>();
+        this.transitions = new LinkedHashSet<>();
         this.transitionCount = 0;
         this.forkCount = 0;
         this.joinCount = 0;
@@ -39,11 +39,11 @@ public class StateDiagram extends UmlDiagram {
         this.states = states;
     }
 
-    public Set<Transition> getTransitions() {
+    public LinkedHashSet<Transition> getTransitions() {
         return transitions;
     }
 
-    public void setTransitions(Set<Transition> transitions) {
+    public void setTransitions(LinkedHashSet<Transition> transitions) {
         this.transitions = transitions;
     }
 
