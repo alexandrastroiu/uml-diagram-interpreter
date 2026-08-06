@@ -22,6 +22,19 @@ public class ActivityNode {
         this.type = type;
     }
 
+    public ActivityNode(String name, ActivityNodeType type, String swimlane, String group) {
+        this.name = name;
+        this.type = type;
+
+        if (!swimlane.isEmpty()) {
+            this.swimlane = swimlane;
+        }
+
+        if(!group.isEmpty()) {
+            this.group = group;
+        }
+    }
+
     // Getters, setters
 
     public String getName() {
@@ -45,7 +58,7 @@ public class ActivityNode {
     }
 
     public void setSwimlane(String swimlane) {
-        this.swimlane = swimlane;
+            this.swimlane = swimlane;
     }
 
     public String getGroup() {
