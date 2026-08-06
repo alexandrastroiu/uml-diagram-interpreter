@@ -5,14 +5,15 @@ import model.elements.ActivityNode;
 import model.relationships.ControlFlow;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class ActivityDiagram extends UmlDiagram {
 
-    private Set<ActivityNode> activities;
-    private Set<String> swimlanes;
-    private Set<String> groups;
-    private Set<ControlFlow> controlFlows;
+    private LinkedHashSet<ActivityNode> activities;
+    private LinkedHashSet<String> swimlanes;
+    private LinkedHashSet<String> groups;
+    private LinkedHashSet<ControlFlow> controlFlows;
     private int activitiesCount;
     private int swimlanesCount;
     private int loops;
@@ -24,10 +25,10 @@ public class ActivityDiagram extends UmlDiagram {
 
     public ActivityDiagram() {
         super();
-        activities = new HashSet<>();
-        swimlanes = new HashSet<>();
-        groups = new HashSet<>();
-        controlFlows = new HashSet<>();
+        activities = new LinkedHashSet<>();
+        swimlanes = new LinkedHashSet<>();
+        groups = new LinkedHashSet<>();
+        controlFlows = new LinkedHashSet<>();
         activitiesCount = 0;
         swimlanesCount = 0;
         loops = 0;
@@ -38,11 +39,11 @@ public class ActivityDiagram extends UmlDiagram {
 
     // Getters, setters
 
-    public Set<ActivityNode> getActivities() {
+    public LinkedHashSet<ActivityNode> getActivities() {
         return activities;
     }
 
-    public void setActivities(Set<ActivityNode> activities) {
+    public void setActivities(LinkedHashSet<ActivityNode> activities) {
         this.activities = activities;
     }
 
@@ -54,11 +55,11 @@ public class ActivityDiagram extends UmlDiagram {
         this.activitiesCount = activitiesCount;
     }
 
-    public Set<String> getSwimlanes() {
+    public LinkedHashSet<String> getSwimlanes() {
         return swimlanes;
     }
 
-    public void setSwimlanes(Set<String> swimlanes) {
+    public void setSwimlanes(LinkedHashSet<String> swimlanes) {
         this.swimlanes = swimlanes;
     }
 
@@ -70,11 +71,11 @@ public class ActivityDiagram extends UmlDiagram {
         this.swimlanesCount = swimlanesCount;
     }
 
-    public Set<ControlFlow> getControlFlows() {
+    public LinkedHashSet<ControlFlow> getControlFlows() {
         return controlFlows;
     }
 
-    public void setControlFlows(Set<ControlFlow> controlFlows) {
+    public void setControlFlows(LinkedHashSet<ControlFlow> controlFlows) {
         this.controlFlows = controlFlows;
     }
 
@@ -86,11 +87,11 @@ public class ActivityDiagram extends UmlDiagram {
         this.loops = loops;
     }
 
-    public Set<String> getGroups() {
+    public LinkedHashSet<String> getGroups() {
         return groups;
     }
 
-    public void setGroups(Set<String> groups) {
+    public void setGroups(LinkedHashSet<String> groups) {
         this.groups = groups;
     }
 
@@ -120,5 +121,13 @@ public class ActivityDiagram extends UmlDiagram {
 
     public void printActivities() {
         this.activities.stream().filter(activity -> !activity.getType().equals(ActivityNodeType.FORK) && !activity.getType().equals(ActivityNodeType.MERGE) && !activity.getType().equals(ActivityNodeType.CONDITIONAL)).forEach(activity -> System.out.println(activity.getName() + " - " + activity.getType()));
+    }
+
+    public void printSwimlanes() {
+        this.swimlanes.stream().forEach(System.out::println);
+    }
+
+    public void printGroups() {
+        this.groups.stream().forEach(System.out::println);
     }
 }
