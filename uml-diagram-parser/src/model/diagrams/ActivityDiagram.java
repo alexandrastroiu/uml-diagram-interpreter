@@ -6,6 +6,7 @@ import model.relationships.ControlFlow;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ActivityDiagram extends UmlDiagram {
@@ -119,15 +120,25 @@ public class ActivityDiagram extends UmlDiagram {
         this.conditionalNodes = conditionalNodes;
     }
 
+    public int countNodes(ActivityNodeType type) {
+        List<ActivityNode> nodes = this.activities.stream().filter(activity -> activity.getType().equals(type)).toList();
+        return nodes.size();
+    }
+
+    public int countElements() {
+        List<ActivityNode> elements = this.activities.stream().filter(activity -> !activity.getType().equals(ActivityNodeType.CONDITIONAL) && !activity.getType().equals(ActivityNodeType.FORK) && !activity.getType().equals(ActivityNodeType.MERGE)).toList();
+        return elements.size();
+    }
+
     public void printActivities() {
         this.activities.stream().filter(activity -> !activity.getType().equals(ActivityNodeType.FORK) && !activity.getType().equals(ActivityNodeType.MERGE) && !activity.getType().equals(ActivityNodeType.CONDITIONAL)).forEach(activity -> System.out.println(activity.getName() + " - " + activity.getType()));
     }
 
     public void printSwimlanes() {
-        this.swimlanes.stream().forEach(System.out::println);
+        this.swimlanes.forEach(System.out::println);
     }
 
     public void printGroups() {
-        this.groups.stream().forEach(System.out::println);
+        this.groups.forEach(System.out::println);
     }
 }
