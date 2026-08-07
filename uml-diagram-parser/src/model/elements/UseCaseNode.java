@@ -7,6 +7,12 @@ public class UseCaseNode {
     private String alias;
     private NodeType type;
 
+    // Constructor
+
+    public UseCaseNode(String name, NodeType type) {
+        this.name = name;
+        this.type = type;
+    }
 
     // Getters, setters
 
