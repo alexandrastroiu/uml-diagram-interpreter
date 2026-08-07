@@ -7,6 +7,7 @@ import enums.StateType;
 import model.diagrams.ActivityDiagram;
 import model.diagrams.StateDiagram;
 import model.diagrams.UmlDiagram;
+import model.diagrams.UseCaseDiagram;
 import model.elements.ActivityNode;
 import model.elements.State;
 import model.relationships.Transition;
@@ -29,7 +30,7 @@ public class PlantumlParser implements DiagramParser {
                 case ACTIVITY:
                     return parseActivityDiagram(lines);
                 case USECASE:
-                    break;
+                    return parseUseCaseDiagram(lines);
                 default:
                     return umlDiagram;
             }
@@ -279,6 +280,32 @@ public class PlantumlParser implements DiagramParser {
         activityDiagram.setMergeCount(activityDiagram.countNodes(ActivityNodeType.MERGE));
 
         return activityDiagram;
+    }
+
+    public UseCaseDiagram parseUseCaseDiagram(List<String> lines) {
+        UseCaseDiagram useCaseDiagram = new UseCaseDiagram();
+        useCaseDiagram.setLanguage(Language.PLANTUML);
+        useCaseDiagram.setType(DiagramType.USECASE);
+        useCaseDiagram.setLinesCount(lines.size());
+
+        String linkPattern = "^.+-[a-z\\-]*>.+$";
+        String extensionPattern = "^.+<|--.+$";
+        String includePattern = "^.+\\.>.+:\\s*include\\s*$";
+        String excludePattern = "^.+\\.>.+:\\s*extends\\s*$";
+        String useCaseDefinition = "^usecase [\\s\\S]+$";
+        String useCasePattern = "^([\\s\\S]+).*$";
+        String actorDefinition = "^actor [\\s\\S]+$";
+        String actorPattern = "^:[\\s\\S]+:.*$";
+        String aliasPattern = "^.+ as .+$";
+
+        // TODO
+        for (String line : lines) {
+            if (!line.isBlank()) {
+                String trimmedLine = line.trim();
+            }
+        }
+
+        return useCaseDiagram;
     }
 
 }
