@@ -4,7 +4,9 @@ import enums.NodeType;
 
 public class UseCaseNode {
     private String name;
+    private String alias;
     private NodeType type;
+
 
     // Getters, setters
 
@@ -22,5 +24,13 @@ public class UseCaseNode {
 
     public void setType(NodeType type) {
         this.type = type;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 }
