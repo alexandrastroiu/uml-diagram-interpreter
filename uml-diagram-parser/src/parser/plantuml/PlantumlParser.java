@@ -171,7 +171,6 @@ public class PlantumlParser implements DiagramParser {
     }
 
     public ActivityDiagram parseActivityDiagram(List<String> lines) {
-        //TODO
         ActivityDiagram activityDiagram = new ActivityDiagram();
         activityDiagram.setLanguage(Language.PLANTUML);
         activityDiagram.setType(DiagramType.ACTIVITY);
@@ -269,9 +268,15 @@ public class PlantumlParser implements DiagramParser {
                 if (trimmedLine.contains(groupEnd) || trimmedLine.contains(partitionEnd)) {
                     currentGroup.delete(0, currentGroup.length());
                 }
-
             }
         }
+
+        activityDiagram.setElements(activityDiagram.countElements());
+        activityDiagram.setActivitiesCount(activityDiagram.getElements());
+        activityDiagram.setSwimlanesCount(activityDiagram.getSwimlanes().size());
+        activityDiagram.setConditionalNodes(activityDiagram.countNodes(ActivityNodeType.CONDITIONAL));
+        activityDiagram.setForkCount(activityDiagram.countNodes(ActivityNodeType.FORK));
+        activityDiagram.setMergeCount(activityDiagram.countNodes(ActivityNodeType.MERGE));
 
         return activityDiagram;
     }
