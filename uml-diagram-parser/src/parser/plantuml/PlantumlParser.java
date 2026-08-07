@@ -1,15 +1,13 @@
 package parser.plantuml;
 
-import enums.ActivityNodeType;
-import enums.DiagramType;
-import enums.Language;
-import enums.StateType;
+import enums.*;
 import model.diagrams.ActivityDiagram;
 import model.diagrams.StateDiagram;
 import model.diagrams.UmlDiagram;
 import model.diagrams.UseCaseDiagram;
 import model.elements.ActivityNode;
 import model.elements.State;
+import model.elements.UseCaseNode;
 import model.relationships.Transition;
 import parser.DiagramParser;
 
@@ -293,15 +291,43 @@ public class PlantumlParser implements DiagramParser {
         String includePattern = "^.+\\.>.+:\\s*include\\s*$";
         String excludePattern = "^.+\\.>.+:\\s*extends\\s*$";
         String useCaseDefinition = "^usecase [\\s\\S]+$";
-        String useCasePattern = "^([\\s\\S]+).*$";
+        String useCasePattern = "^\\([\\s\\S]+\\).*$";
         String actorDefinition = "^actor [\\s\\S]+$";
         String actorPattern = "^:[\\s\\S]+:.*$";
         String aliasPattern = "^.+ as .+$";
+        String usecase = "usecase";
 
         // TODO
         for (String line : lines) {
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
+
+                if (Pattern.matches(useCaseDefinition, trimmedLine)) {
+                    int nameStart = usecase.length();
+                    int nameEnd = trimmedLine.length();
+
+                    if (Pattern.matches(aliasPattern, trimmedLine)) {
+                        nameEnd = trimmedLine.indexOf(" as ");
+                    }
+                    String useCaseName = trimmedLine.substring(nameStart, nameEnd).trim();
+                    UseCaseNode useCase = new UseCaseNode(useCaseName, NodeType.USECASE);
+                    useCaseDiagram.getUseCases().add(useCase);
+                }
+
+
+                if (Pattern.matches(useCasePattern, trimmedLine)) {
+                    int nameStart = trimmedLine.indexOf("(");
+                    int nameEnd = trimmedLine.length();
+
+                    if (Pattern.matches(aliasPattern, trimmedLine)) {
+                        nameEnd = trimmedLine.indexOf(" as "); ///TODO how to handle alias?
+                    }
+
+                    String useCaseName = trimmedLine.substring(nameStart, nameEnd).replace("(", "").replace(")", ""). trim();
+                    UseCaseNode useCase = new UseCaseNode(useCaseName, NodeType.USECASE);
+                    useCaseDiagram.getUseCases().add(useCase);
+                }
+
             }
         }
 
