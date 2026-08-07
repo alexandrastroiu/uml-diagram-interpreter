@@ -3,6 +3,7 @@ package model.diagrams;
 import model.elements.UseCaseNode;
 import model.relationships.Link;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class UseCaseDiagram extends UmlDiagram {
@@ -15,6 +16,15 @@ public class UseCaseDiagram extends UmlDiagram {
     private int linksCount;
 
     // Getters, setters
+
+    public UseCaseDiagram() {
+        this.actors = new HashSet<>();
+        this.useCases = new HashSet<>();
+        this.links = new HashSet<>();
+        useCasesCount = 0;
+        actorsCount = 0;
+        linksCount = 0;
+    }
 
     public Set<UseCaseNode> getActors() {
         return actors;
@@ -62,5 +72,9 @@ public class UseCaseDiagram extends UmlDiagram {
 
     public void setActorsCount(int actorsCount) {
         this.actorsCount = actorsCount;
+    }
+
+    public void printUseCases() {
+        this.useCases.forEach(usecase -> System.out.println(usecase.getName()));
     }
 }
