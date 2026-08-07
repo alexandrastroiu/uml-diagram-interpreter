@@ -179,7 +179,7 @@ public class PlantumlParser implements DiagramParser {
         String startPattern = "start";
         List<String> endPattern = List.of("stop", "end");
         String conditionalPattern = "^[\\s\\S]*(if|elseif)[\\s\\S]+then[\\s\\S]+$";
-        String switchPattern = "switch\\s+([\\s\\S]+)\\s*";
+        String switchPattern = "case\\s+([\\s\\S]+)\\s*";
         String labelStart = "^\\s*:.+$";
         String labelEnd = ";";
         String forkPattern = "^fork[\\s\\S]*$";
