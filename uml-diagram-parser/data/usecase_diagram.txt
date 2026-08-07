@@ -1,0 +1,66 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor Customer
+actor "Bank Technician" as Technician
+actor "Bank System" as Bank
+
+rectangle "ATM System" {
+
+  usecase "Authenticate User" as UC_Auth
+  usecase "Withdraw Cash" as UC_Withdraw
+  usecase "Deposit Funds" as UC_Deposit
+  usecase "Check Balance" as UC_Balance
+  usecase "Transfer Funds" as UC_Transfer
+  usecase "Change PIN" as UC_ChangePIN
+  usecase "Print Receipt" as UC_Receipt
+  usecase "Eject Card" as UC_Eject
+
+  usecase "Maintain ATM" as UC_Maintain
+  usecase "Refill Cash" as UC_Refill
+  usecase "Run Diagnostics" as UC_Diagnostics
+}
+
+' Customer interactions
+Customer --> UC_Withdraw
+Customer --> UC_Deposit
+Customer --> UC_Balance
+Customer --> UC_Transfer
+Customer --> UC_ChangePIN
+
+' Authentication is required
+UC_Withdraw .> UC_Auth : <<include>>
+UC_Deposit .> UC_Auth : <<include>>
+UC_Balance .> UC_Auth : <<include>>
+UC_Transfer .> UC_Auth : <<include>>
+UC_ChangePIN .> UC_Auth : <<include>>
+
+' Optional receipt
+UC_Receipt .> UC_Withdraw : <<extend>>
+UC_Receipt .> UC_Deposit : <<extend>>
+UC_Receipt .> UC_Balance : <<extend>>
+UC_Receipt .> UC_Transfer : <<extend>>
+
+' Card is ejected after transactions
+UC_Withdraw .> UC_Eject : <<include>>
+UC_Deposit .> UC_Eject : <<include>>
+UC_Balance .> UC_Eject : <<include>>
+UC_Transfer .> UC_Eject : <<include>>
+UC_ChangePIN .> UC_Eject : <<include>>
+
+' Bank system interactions
+Bank --> UC_Auth
+Bank --> UC_Withdraw
+Bank --> UC_Deposit
+Bank --> UC_Balance
+Bank --> UC_Transfer
+Bank --> UC_ChangePIN
+
+' Technician operations
+Technician --> UC_Maintain
+UC_Maintain .> UC_Refill : <<include>>
+UC_Maintain .> UC_Diagnostics : <<include>>
+
+@enduml
