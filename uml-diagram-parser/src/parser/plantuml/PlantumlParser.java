@@ -169,6 +169,8 @@ public class PlantumlParser implements DiagramParser {
         return stateDiagram;
     }
 
+    // Interpreteaza diagrama de activitati
+
     public ActivityDiagram parseActivityDiagram(List<String> lines) {
         ActivityDiagram activityDiagram = new ActivityDiagram();
         activityDiagram.setLanguage(Language.PLANTUML);
@@ -280,6 +282,8 @@ public class PlantumlParser implements DiagramParser {
         return activityDiagram;
     }
 
+    // Interpreteaza diagrama de cazuri de utilizare
+
     public UseCaseDiagram parseUseCaseDiagram(List<String> lines) {
         UseCaseDiagram useCaseDiagram = new UseCaseDiagram();
         useCaseDiagram.setLanguage(Language.PLANTUML);
@@ -295,72 +299,91 @@ public class PlantumlParser implements DiagramParser {
         String actorDefinition = "^actor [\\s\\S]+$";
         String actorPattern = "^:[\\s\\S]+:.*$";
         String aliasPattern = "^.+ as .+$";
-        String u = "usecase";
-        String a = "actor";
+        String usecase = "usecase";
+        String actor = "actor";
+        String alias = " as ";
 
         // TODO
         for (String line : lines) {
+
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
 
                 // Caz de utilizare
 
                 if (Pattern.matches(useCaseDefinition, trimmedLine)) {
-                    int nameStart = u.length();
+                    int nameStart = usecase.length();
                     int nameEnd = trimmedLine.length();
+                    int aliasStart = trimmedLine.length();
 
                     if (Pattern.matches(aliasPattern, trimmedLine)) {
-                        nameEnd = trimmedLine.indexOf(" as ");
+                        nameEnd = trimmedLine.indexOf(alias);
+                        aliasStart = nameEnd + alias.length();
                     }
 
                     String useCaseName = trimmedLine.substring(nameStart, nameEnd).replace("\"", "").trim();
-                    UseCaseNode useCase = new UseCaseNode(useCaseName, NodeType.USECASE);
-                    useCaseDiagram.getUseCases().add(useCase);
+                    String useCaseAlias = trimmedLine.substring(aliasStart);
+                    UseCaseNode newUseCase = new UseCaseNode(useCaseName, useCaseAlias, NodeType.USECASE);
+                    useCaseDiagram.addUseCaseNode(newUseCase, useCaseDiagram.getUseCaseLookup());
                 }
 
                 if (Pattern.matches(useCasePattern, trimmedLine)) {
                     int nameStart = trimmedLine.indexOf("(");
                     int nameEnd = trimmedLine.length();
+                    int aliasStart = trimmedLine.length();
 
                     if (Pattern.matches(aliasPattern, trimmedLine)) {
-                        nameEnd = trimmedLine.indexOf(" as "); ///TODO how to handle alias
+                        nameEnd = trimmedLine.indexOf(alias);
+                        aliasStart = nameEnd + alias.length();
                     }
 
                     String useCaseName = trimmedLine.substring(nameStart, nameEnd).replace("(", "").replace(")", ""). trim();
-                    UseCaseNode useCase = new UseCaseNode(useCaseName, NodeType.USECASE);
-                    useCaseDiagram.getUseCases().add(useCase);
+                    String useCaseAlias = trimmedLine.substring(aliasStart);
+                    UseCaseNode newUseCase = new UseCaseNode(useCaseName, useCaseAlias, NodeType.USECASE);
+                    useCaseDiagram.addUseCaseNode(newUseCase, useCaseDiagram.getUseCaseLookup());
                 }
 
                 // Actor
 
                 if (Pattern.matches(actorDefinition, trimmedLine)) {
-                    int nameStart = a.length();
+                    int nameStart = actor.length();
                     int nameEnd = trimmedLine.length();
+                    int aliasStart = trimmedLine.length();
 
                     if (Pattern.matches(aliasPattern, trimmedLine)) {
-                        nameEnd = trimmedLine.indexOf(" as ");
+                        nameEnd = trimmedLine.indexOf(alias);
+                        aliasStart = nameEnd + alias.length();
                     }
 
                     String actorName = trimmedLine.substring(nameStart, nameEnd).replace("\"", "").trim();
-                    UseCaseNode actor = new UseCaseNode(actorName, NodeType.ACTOR);
-                    useCaseDiagram.getActors().add(actor);
+                    String actorAlias = trimmedLine.substring(aliasStart);
+                    UseCaseNode newActor = new UseCaseNode(actorName, actorAlias, NodeType.ACTOR);
+                    useCaseDiagram.addUseCaseNode(newActor, useCaseDiagram.getActorLookup());
                 }
 
                 if (Pattern.matches(actorPattern, trimmedLine)) {
                     int nameStart = trimmedLine.indexOf(":");
                     int nameEnd = trimmedLine.length();
+                    int aliasStart = trimmedLine.length();
 
                     if (Pattern.matches(aliasPattern, trimmedLine)) {
-                        nameEnd = trimmedLine.indexOf(" as "); ///TODO how to handle alias
+                        nameEnd = trimmedLine.indexOf(alias);
+                        aliasStart = nameEnd + alias.length();
                     }
 
                     String actorName = trimmedLine.substring(nameStart, nameEnd).replace(":", ""). trim();
-                    UseCaseNode actor = new UseCaseNode(actorName, NodeType.USECASE);
-                    useCaseDiagram.getActors().add(actor);
+                    String actorAlias = trimmedLine.substring(aliasStart);
+                    UseCaseNode newActor = new UseCaseNode(actorName, actorAlias, NodeType.USECASE);
+                    useCaseDiagram.addUseCaseNode(newActor, useCaseDiagram.getActorLookup());
                 }
 
             }
         }
+
+        useCaseDiagram.addSetElements(useCaseDiagram.getUseCases(), useCaseDiagram.getUseCaseLookup());
+        useCaseDiagram.setUseCasesCount(useCaseDiagram.getUseCases().size());
+        useCaseDiagram.addSetElements(useCaseDiagram.getActors(), useCaseDiagram.getActorLookup());
+        useCaseDiagram.setActorsCount(useCaseDiagram.getActors().size());
 
         return useCaseDiagram;
     }
