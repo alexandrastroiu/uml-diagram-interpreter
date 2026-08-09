@@ -9,6 +9,16 @@ public class Link {
     private UseCaseNode start;
     private UseCaseNode end;
 
+    // Constructor
+
+    public Link(LinkType type, UseCaseNode start, UseCaseNode end) {
+        this.type = type;
+        this.start = start;
+        this.end = end;
+    }
+
+    // Getters, Setters
+
     public LinkType getType() {
         return type;
     }
