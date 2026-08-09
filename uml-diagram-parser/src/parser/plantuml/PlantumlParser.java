@@ -295,37 +295,68 @@ public class PlantumlParser implements DiagramParser {
         String actorDefinition = "^actor [\\s\\S]+$";
         String actorPattern = "^:[\\s\\S]+:.*$";
         String aliasPattern = "^.+ as .+$";
-        String usecase = "usecase";
+        String u = "usecase";
+        String a = "actor";
 
         // TODO
         for (String line : lines) {
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
 
+                // Caz de utilizare
+
                 if (Pattern.matches(useCaseDefinition, trimmedLine)) {
-                    int nameStart = usecase.length();
+                    int nameStart = u.length();
                     int nameEnd = trimmedLine.length();
 
                     if (Pattern.matches(aliasPattern, trimmedLine)) {
                         nameEnd = trimmedLine.indexOf(" as ");
                     }
-                    String useCaseName = trimmedLine.substring(nameStart, nameEnd).trim();
+
+                    String useCaseName = trimmedLine.substring(nameStart, nameEnd).replace("\"", "").trim();
                     UseCaseNode useCase = new UseCaseNode(useCaseName, NodeType.USECASE);
                     useCaseDiagram.getUseCases().add(useCase);
                 }
-
 
                 if (Pattern.matches(useCasePattern, trimmedLine)) {
                     int nameStart = trimmedLine.indexOf("(");
                     int nameEnd = trimmedLine.length();
 
                     if (Pattern.matches(aliasPattern, trimmedLine)) {
-                        nameEnd = trimmedLine.indexOf(" as "); ///TODO how to handle alias?
+                        nameEnd = trimmedLine.indexOf(" as "); ///TODO how to handle alias
                     }
 
                     String useCaseName = trimmedLine.substring(nameStart, nameEnd).replace("(", "").replace(")", ""). trim();
                     UseCaseNode useCase = new UseCaseNode(useCaseName, NodeType.USECASE);
                     useCaseDiagram.getUseCases().add(useCase);
+                }
+
+                // Actor
+
+                if (Pattern.matches(actorDefinition, trimmedLine)) {
+                    int nameStart = a.length();
+                    int nameEnd = trimmedLine.length();
+
+                    if (Pattern.matches(aliasPattern, trimmedLine)) {
+                        nameEnd = trimmedLine.indexOf(" as ");
+                    }
+
+                    String actorName = trimmedLine.substring(nameStart, nameEnd).replace("\"", "").trim();
+                    UseCaseNode actor = new UseCaseNode(actorName, NodeType.ACTOR);
+                    useCaseDiagram.getActors().add(actor);
+                }
+
+                if (Pattern.matches(actorPattern, trimmedLine)) {
+                    int nameStart = trimmedLine.indexOf(":");
+                    int nameEnd = trimmedLine.length();
+
+                    if (Pattern.matches(aliasPattern, trimmedLine)) {
+                        nameEnd = trimmedLine.indexOf(" as "); ///TODO how to handle alias
+                    }
+
+                    String actorName = trimmedLine.substring(nameStart, nameEnd).replace(":", ""). trim();
+                    UseCaseNode actor = new UseCaseNode(actorName, NodeType.USECASE);
+                    useCaseDiagram.getActors().add(actor);
                 }
 
             }
