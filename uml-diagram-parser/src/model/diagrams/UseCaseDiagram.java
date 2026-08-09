@@ -77,4 +77,8 @@ public class UseCaseDiagram extends UmlDiagram {
     public void printUseCases() {
         this.useCases.forEach(usecase -> System.out.println(usecase.getName()));
     }
+
+    public void printActors() {
+        this.actors.forEach(actor -> System.out.println(actor.getName()));
+    }
 }
