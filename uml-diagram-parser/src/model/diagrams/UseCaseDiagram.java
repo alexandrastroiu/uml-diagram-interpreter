@@ -4,49 +4,52 @@ import model.elements.UseCaseNode;
 import model.relationships.Link;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class UseCaseDiagram extends UmlDiagram {
 
-    private Set<UseCaseNode> actors;
-    private Set<UseCaseNode> useCases;
-    private Set<Link> links;
+    private LinkedHashSet<UseCaseNode> actors;
+    private LinkedHashSet<UseCaseNode> useCases;
+    private LinkedHashSet<Link> links;
     private int useCasesCount;
     private int actorsCount;
     private int linksCount;
 
-    // Getters, setters
+    // Constructor
 
     public UseCaseDiagram() {
-        this.actors = new HashSet<>();
-        this.useCases = new HashSet<>();
-        this.links = new HashSet<>();
+        this.actors = new LinkedHashSet<>();
+        this.useCases = new LinkedHashSet<>();
+        this.links = new LinkedHashSet<>();
         useCasesCount = 0;
         actorsCount = 0;
         linksCount = 0;
     }
 
-    public Set<UseCaseNode> getActors() {
+    // Getters, setters
+
+    public LinkedHashSet<UseCaseNode> getActors() {
         return actors;
     }
 
-    public void setActors(Set<UseCaseNode> actors) {
+    public void setActors(LinkedHashSet<UseCaseNode> actors) {
         this.actors = actors;
     }
 
-    public Set<UseCaseNode> getUseCases() {
+    public LinkedHashSet<UseCaseNode> getUseCases() {
         return useCases;
     }
 
-    public void setUseCases(Set<UseCaseNode> useCases) {
+    public void setUseCases(LinkedHashSet<UseCaseNode> useCases) {
         this.useCases = useCases;
     }
 
-    public Set<Link> getLinks() {
+    public LinkedHashSet<Link> getLinks() {
         return links;
     }
 
-    public void setLinks(Set<Link> links) {
+    public void setLinks(LinkedHashSet<Link> links) {
         this.links = links;
     }
 
