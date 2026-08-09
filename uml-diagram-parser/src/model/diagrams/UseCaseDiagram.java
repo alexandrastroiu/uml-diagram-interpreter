@@ -3,12 +3,13 @@ package model.diagrams;
 import model.elements.UseCaseNode;
 import model.relationships.Link;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UseCaseDiagram extends UmlDiagram {
 
+    private LinkedHashMap<String, UseCaseNode> actorLookup;
+    private LinkedHashMap<String, UseCaseNode> useCaseLookup;
     private LinkedHashSet<UseCaseNode> actors;
     private LinkedHashSet<UseCaseNode> useCases;
     private LinkedHashSet<Link> links;
@@ -19,6 +20,8 @@ public class UseCaseDiagram extends UmlDiagram {
     // Constructor
 
     public UseCaseDiagram() {
+        this.actorLookup = new LinkedHashMap<>();
+        this.useCaseLookup = new LinkedHashMap<>();
         this.actors = new LinkedHashSet<>();
         this.useCases = new LinkedHashSet<>();
         this.links = new LinkedHashSet<>();
@@ -77,8 +80,49 @@ public class UseCaseDiagram extends UmlDiagram {
         this.actorsCount = actorsCount;
     }
 
+    public LinkedHashMap<String, UseCaseNode> getActorLookup() {
+        return actorLookup;
+    }
+
+    public void setActorLookup(LinkedHashMap<String, UseCaseNode> actorLookup) {
+        this.actorLookup = actorLookup;
+    }
+
+    public LinkedHashMap<String, UseCaseNode> getUseCaseLookup() {
+        return useCaseLookup;
+    }
+
+    public void setUseCaseLookup(LinkedHashMap<String, UseCaseNode> useCaseLookup) {
+        this.useCaseLookup = useCaseLookup;
+    }
+
+    public void addUseCaseNode(UseCaseNode node, LinkedHashMap<String, UseCaseNode> map) {
+        String name = node.getName();
+        String alias = node.getAlias();
+
+        if (map.containsKey(name)) {
+            UseCaseNode value = map.get(name);
+            value.updateUseCaseNode(node);
+            if (!alias.isEmpty()) {
+                map.put(alias, node);
+            }
+        }
+        else {
+            map.put(name, node);
+            if (!alias.isEmpty()) {
+                map.put(alias, node);
+            }
+        }
+    }
+
+    public void addSetElements(LinkedHashSet<UseCaseNode> set, LinkedHashMap<String, UseCaseNode> map) {
+        if (!map.isEmpty()) {
+            set.addAll(map.values());
+        }
+    }
+
     public void printUseCases() {
-        this.useCases.forEach(usecase -> System.out.println(usecase.getName()));
+        this.useCases.forEach(useCase -> System.out.println(useCase.getName()));
     }
 
     public void printActors() {
