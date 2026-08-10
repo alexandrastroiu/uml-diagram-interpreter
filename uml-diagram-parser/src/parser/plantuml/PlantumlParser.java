@@ -8,6 +8,7 @@ import model.diagrams.UseCaseDiagram;
 import model.elements.ActivityNode;
 import model.elements.State;
 import model.elements.UseCaseNode;
+import model.relationships.Link;
 import model.relationships.Transition;
 import parser.DiagramParser;
 
@@ -38,6 +39,7 @@ public class PlantumlParser implements DiagramParser {
 
     // Interpreteaza diagrama de stare
 
+    // TODO substates and alias
     public StateDiagram parseStateDiagram(List<String> lines) {
         StateDiagram stateDiagram = new StateDiagram();
         stateDiagram.setLanguage(Language.PLANTUML);
@@ -196,7 +198,7 @@ public class PlantumlParser implements DiagramParser {
         StringBuilder currentGroup = new StringBuilder(CAPACITY);
         boolean readingActivityLabel = false;
 
-        //TODO
+        //TODO relationships
         for (String line : lines) {
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
@@ -291,9 +293,9 @@ public class PlantumlParser implements DiagramParser {
         useCaseDiagram.setLinesCount(lines.size());
 
         String linkPattern = "^.+-[a-z\\-]*>.+$";
-        String extensionPattern = "^.+<|--.+$";
-        String includePattern = "^.+\\.>.+:\\s*include\\s*$";
-        String excludePattern = "^.+\\.>.+:\\s*extends\\s*$";
+        String extensionPattern = "^.+<\\|--.+$";
+        String includePattern = "^.+\\.>.+:\\s*<<include>>\\s*$";
+        String extendPattern = "^.+\\.>.+:\\s*<<extend>>\\s*$";
         String useCaseDefinition = "^usecase [\\s\\S]+$";
         String useCasePattern = "^\\([\\s\\S]+\\).*$";
         String actorDefinition = "^actor [\\s\\S]+$";
@@ -304,7 +306,7 @@ public class PlantumlParser implements DiagramParser {
         String alias = " as ";
 
         // TODO
-        for (String line : lines) {
+        for (String line : lines) { /// TODO refactor code
 
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
@@ -380,10 +382,59 @@ public class PlantumlParser implements DiagramParser {
             }
         }
 
+        for (String line : lines) {
+            if (!line.isBlank()) {
+                String trimmedLine = line.trim();
+
+                if (Pattern.matches(linkPattern, trimmedLine)) {
+                    int linkStart = trimmedLine.indexOf(" -");
+                    int linkEnd = trimmedLine.indexOf("> ");
+                    String element1 = trimmedLine.substring(0, linkStart).trim();
+                    String element2 = trimmedLine.substring(linkEnd + 1).trim();
+                    Link link = new Link(LinkType.LINK);
+                    link.addLinkElements(useCaseDiagram, element1, element2);
+                    useCaseDiagram.getLinks().add(link);
+                }
+
+                if (Pattern.matches(extendPattern, trimmedLine)) {
+                    int linkStart = trimmedLine.indexOf(" .");
+                    int linkEnd = trimmedLine.indexOf("> ");
+                    int index = trimmedLine.indexOf("<<extend>>");
+                    String element1 = trimmedLine.substring(0, linkStart).trim();
+                    String element2 = trimmedLine.substring(linkEnd + 1, index).trim();
+                    Link link = new Link(LinkType.EXTEND);
+                    link.addLinkElements(useCaseDiagram, element1, element2);
+                    useCaseDiagram.getLinks().add(link);
+                }
+
+                if (Pattern.matches(includePattern, trimmedLine)) {
+                    int linkStart = trimmedLine.indexOf(" .");
+                    int linkEnd = trimmedLine.indexOf("> ");
+                    int index = trimmedLine.indexOf("<<include>>");
+                    String element1 = trimmedLine.substring(0, linkStart).trim();
+                    String element2 = trimmedLine.substring(linkEnd + 1, index).trim();
+                    Link link = new Link(LinkType.INCLUDE);
+                    link.addLinkElements(useCaseDiagram, element1, element2);
+                    useCaseDiagram.getLinks().add(link);
+                }
+
+                if (Pattern.matches(extensionPattern, trimmedLine)) {
+                    int linkStart = trimmedLine.indexOf(" <");
+                    int linkEnd = trimmedLine.indexOf("- ");
+                    String element1 = trimmedLine.substring(0, linkStart).trim();
+                    String element2 = trimmedLine.substring(linkEnd + 1).trim();
+                    Link link = new Link(LinkType.EXTENSION);
+                    link.addLinkElements(useCaseDiagram, element1, element2);
+                    useCaseDiagram.getLinks().add(link);
+                }
+            }
+        }
+
         useCaseDiagram.addSetElements(useCaseDiagram.getUseCases(), useCaseDiagram.getUseCaseLookup());
         useCaseDiagram.setUseCasesCount(useCaseDiagram.getUseCases().size());
         useCaseDiagram.addSetElements(useCaseDiagram.getActors(), useCaseDiagram.getActorLookup());
         useCaseDiagram.setActorsCount(useCaseDiagram.getActors().size());
+        useCaseDiagram.setLinksCount(useCaseDiagram.getLinks().size());
 
         return useCaseDiagram;
     }
