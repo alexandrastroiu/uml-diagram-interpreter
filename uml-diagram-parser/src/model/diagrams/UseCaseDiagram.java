@@ -4,6 +4,7 @@ import model.elements.UseCaseNode;
 import model.relationships.Link;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class UseCaseDiagram extends UmlDiagram {
@@ -121,11 +122,40 @@ public class UseCaseDiagram extends UmlDiagram {
         }
     }
 
+    public String getElementName(String name) {
+        return name.trim().replace("(", "").replace(")", "").replace(":", "").trim();
+    }
+
+    public boolean isActor(String name) {
+        String actorPattern = "(^:[\\s\\S]+:[\\s\\S]*$|^[^:]+$)";
+
+
+        return Pattern.matches(actorPattern, name);
+    }
+
+    public boolean isUseCase(String name) {
+        String actorPattern = "^\\([\\s\\S]+\\)[\\s\\S]*$";
+
+        return Pattern.matches(actorPattern, name);
+    }
+
+    public boolean useCaseExists(String name) {
+        return useCaseLookup.containsKey(name);
+    }
+
+    public boolean actorExists(String name) {
+        return actorLookup.containsKey(name);
+    }
+
     public void printUseCases() {
         this.useCases.forEach(useCase -> System.out.println(useCase.getName()));
     }
 
     public void printActors() {
         this.actors.forEach(actor -> System.out.println(actor.getName()));
+    }
+
+    public void printLinks() {
+        this.links.forEach(link -> System.out.println(link.getStart().getName() + " -> " + link.getEnd().getName() + " - " + link.getType()));
     }
 }
