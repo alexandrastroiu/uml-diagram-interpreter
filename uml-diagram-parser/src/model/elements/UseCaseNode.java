@@ -9,6 +9,12 @@ public class UseCaseNode {
 
     // Constructor
 
+    public UseCaseNode() {
+        this.name = "";
+        this.alias = "";
+        this.type = NodeType.USECASE;
+    }
+
     public UseCaseNode(String name, String alias, NodeType type) {
         this.name = name;
         this.alias = alias;
