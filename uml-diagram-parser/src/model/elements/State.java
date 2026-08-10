@@ -8,7 +8,7 @@ import java.util.Set;
 public class State {
 
     private String name;
-    private String description;
+    private String alias;
     private StateType type;
     private Set<State> substates;
 
@@ -16,7 +16,7 @@ public class State {
 
     public State() {
         this.name = "";
-        this.description = "";
+        this.alias = "";
         this.type = StateType.SIMPLE;
         this.substates = new HashSet<State>();
     }
@@ -47,12 +47,14 @@ public class State {
         this.substates = substates;
     }
 
-    public String getDescription() {
-        return description;
+    public String getAlias() {
+        return alias;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setAlias(String alias) {
+        if (!alias.isEmpty()) {
+            this.alias = alias;
+        }
     }
 
     public void updateState(State state) {
@@ -61,8 +63,8 @@ public class State {
                 setType(state.getType());
             }
 
-            if (!state.getDescription().isEmpty() && !state.getDescription().equals(this.description)) {
-                setDescription(state.getDescription());
+            if (!state.getAlias().isEmpty() && !state.getAlias().equals(this.alias)) {
+                setAlias(state.getAlias());
             }
         }
     }
