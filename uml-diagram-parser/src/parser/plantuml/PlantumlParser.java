@@ -39,7 +39,6 @@ public class PlantumlParser implements DiagramParser {
 
     // Interpreteaza diagrama de stare
 
-    // TODO substates and alias
     public StateDiagram parseStateDiagram(List<String> lines) {
         StateDiagram stateDiagram = new StateDiagram();
         stateDiagram.setLanguage(Language.PLANTUML);
@@ -57,10 +56,10 @@ public class PlantumlParser implements DiagramParser {
         String initialPattern = "[*] ";
         String finalPattern = " [*]";
         String statePattern = "state ";
-        String descriptionPattern = " as ";
         String colorPattern = " #";
         String compositePattern = " {";
-        String longNamePattern = "^state [\\s\\S]+ as [\\s\\S]+$";
+        String aliasPattern = "^state [\\s\\S]+ as [\\s\\S]+$";
+        String alias = " as ";
         String transitionPattern = "^[\\s\\S]+ -[a-zA-Z0-9,#\\[\\]]*-> [\\s\\S]+$";
         String startPattern = " -";
         String endPattern = "-> ";
@@ -76,16 +75,7 @@ public class PlantumlParser implements DiagramParser {
                     State state = new State();
                     int index1 = statePattern.length();
                     String name = trimmedLine.substring(index1);
-
-                    if (Pattern.matches(longNamePattern, trimmedLine)) {
-                        int index2 = trimmedLine.indexOf(descriptionPattern);
-                        int index3 = index2 + descriptionPattern.length();
-
-                        String description = trimmedLine.substring(index1, index2).trim();
-                        name = trimmedLine.substring(index3).trim();
-
-                        state.setDescription(description);
-                    }
+                    String stateAlias = "";
 
                     if (trimmedLine.endsWith(compositePattern)) {
                         int index6 = name.indexOf(compositePattern);
@@ -108,7 +98,16 @@ public class PlantumlParser implements DiagramParser {
                         }
                     }
 
+                    if (Pattern.matches(aliasPattern, trimmedLine)) {
+                        int index2 = name.indexOf(alias);
+                        int index3 = index2 + alias.length();
+
+                        stateAlias = name.substring(index3).replace("\"", "").trim();
+                        name = name.substring(0, index2).trim();
+                    }
+
                     state.setName(name);
+                    state.setAlias(stateAlias);
                     stateDiagram.addState(state);
                 }
 
@@ -127,7 +126,7 @@ public class PlantumlParser implements DiagramParser {
                     else {
                         int indexStart = trimmedLine.indexOf(startPattern);
 
-                        name = trimmedLine.substring(0, indexStart).trim();
+                        name = trimmedLine.substring(0, indexStart).replace("\"", "").trim();
                         startState.setName(name);
                     }
 
@@ -136,13 +135,13 @@ public class PlantumlParser implements DiagramParser {
 
                     if (trimmedLine.contains(stateDescription)) {
                         int indexDescription = trimmedLine.indexOf(stateDescription);
-                        name = trimmedLine.substring(indexStateEnd, indexDescription).trim();
+                        name = trimmedLine.substring(indexStateEnd, indexDescription).replace("\"", "").trim();
                         String description = trimmedLine.substring(indexDescription + stateDescription.length()).trim();
 
                         transition.setTransitionDescription(description);
                     }
                     else {
-                        name = trimmedLine.substring(indexStateEnd).trim();
+                        name = trimmedLine.substring(indexStateEnd).replace("\"", "").trim();
                     }
 
                     if (name.endsWith(finalPattern.trim())) {
@@ -162,6 +161,7 @@ public class PlantumlParser implements DiagramParser {
 
         stateDiagram.setTransitionCount(stateDiagram.getTransitions().size());
         stateDiagram.setRelationships(stateDiagram.getTransitionCount());
+        stateDiagram.addSetElements(stateDiagram.getStates(), stateDiagram.getStateLookup());
         stateDiagram.setForkCount(stateDiagram.countNodes(StateType.FORK));
         stateDiagram.setJoinCount(stateDiagram.countNodes(StateType.JOIN));
         stateDiagram.setChoiceStates(stateDiagram.countNodes(StateType.CHOICE));
@@ -378,7 +378,6 @@ public class PlantumlParser implements DiagramParser {
                     UseCaseNode newActor = new UseCaseNode(actorName, actorAlias, NodeType.USECASE);
                     useCaseDiagram.addUseCaseNode(newActor, useCaseDiagram.getActorLookup());
                 }
-
             }
         }
 
