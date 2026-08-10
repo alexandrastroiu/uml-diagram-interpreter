@@ -148,14 +148,14 @@ public class UseCaseDiagram extends UmlDiagram {
     }
 
     public void printUseCases() {
-        this.useCases.forEach(useCase -> System.out.println(useCase.getName()));
+        useCases.forEach(useCase -> System.out.println(useCase.getName()));
     }
 
     public void printActors() {
-        this.actors.forEach(actor -> System.out.println(actor.getName()));
+        actors.forEach(actor -> System.out.println(actor.getName()));
     }
 
     public void printLinks() {
-        this.links.forEach(link -> System.out.println(link.getStart().getName() + " -> " + link.getEnd().getName() + " - " + link.getType()));
+        links.forEach(link -> System.out.println(link.getStart().getName() + " -> " + link.getEnd().getName() + " - " + link.getType()));
     }
 }
