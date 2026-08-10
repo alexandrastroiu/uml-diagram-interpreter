@@ -2,13 +2,15 @@ package model.diagrams;
 
 import enums.StateType;
 import model.elements.State;
+import model.elements.UseCaseNode;
 import model.relationships.Transition;
 
 import java.util.*;
 
 public class StateDiagram extends UmlDiagram {
 
-    private LinkedHashMap<String, State> states;
+    private LinkedHashMap<String, State> stateLookup;
+    private LinkedHashSet<State> states;
     private LinkedHashSet<Transition> transitions;
     private int transitionCount;
     private int forkCount;
@@ -20,7 +22,8 @@ public class StateDiagram extends UmlDiagram {
 
     public StateDiagram () {
         super();
-        this.states = new LinkedHashMap<>();
+        this.stateLookup = new LinkedHashMap<>();
+        this.states = new LinkedHashSet<>();
         this.transitions = new LinkedHashSet<>();
         this.transitionCount = 0;
         this.forkCount = 0;
@@ -31,12 +34,12 @@ public class StateDiagram extends UmlDiagram {
 
     // Getters, setters
 
-    public LinkedHashMap<String, State> getStates() {
-        return states;
+    public LinkedHashMap<String, State> getStateLookup() {
+        return stateLookup;
     }
 
-    public void setStates(LinkedHashMap<String, State> states) {
-        this.states = states;
+    public void setStateLookup(LinkedHashMap<String, State> stateLookup) {
+        this.stateLookup = stateLookup;
     }
 
     public LinkedHashSet<Transition> getTransitions() {
@@ -87,30 +90,45 @@ public class StateDiagram extends UmlDiagram {
         this.compositeStates = compositeStates;
     }
 
+    public LinkedHashSet<State> getStates() {
+        return states;
+    }
+
+    public void setStates(LinkedHashSet<State> states) {
+        this.states = states;
+    }
+
     public int countNodes(StateType type) {
-        List<State> nodes = getStates().values().stream().filter(state -> state.getType().equals(type)).toList();
+        List<State> nodes = states.stream().filter(state -> state.getType().equals(type)).toList();
         return nodes.size();
     }
 
     public int countElements() {
-        List<State> elements = getStates().values().stream().filter(state -> !state.getType().equals(StateType.FORK) &&  !state.getType().equals(StateType.JOIN) && !state.getType().equals(StateType.CHOICE)).toList();
+        List<State> elements = states.stream().filter(state -> !state.getType().equals(StateType.FORK) &&  !state.getType().equals(StateType.JOIN) && !state.getType().equals(StateType.CHOICE)).toList();
         return elements.size();
     }
 
     public void addState(State newState) {
-        HashMap<String, State> states = getStates();
+        HashMap<String, State> states = getStateLookup();
         String name = newState.getName();
+        String alias = newState.getAlias();
 
         if (states.containsKey(name)) {
             State foundState =  states.get(name);
             foundState.updateState(newState);
+            if (!alias.isEmpty()) {
+                states.put(alias, newState);
+            }
         } else {
             states.put(name, newState);
+            if (!alias.isEmpty()) {
+                states.put(alias, newState);
+            }
         }
     }
 
     public State findState(State state) {
-        HashMap<String, State> states = getStates();
+        HashMap<String, State> states = getStateLookup();
         String name = state.getName();
 
         if (states.containsKey(name)) {
@@ -120,11 +138,17 @@ public class StateDiagram extends UmlDiagram {
         return state;
     }
 
+    public void addSetElements(LinkedHashSet<State> set, LinkedHashMap<String, State> map) {
+        if (!map.isEmpty()) {
+            set.addAll(map.values());
+        }
+    }
+
     public void printStates() {
-        getStates().values().stream().filter(state -> !state.getType().equals(StateType.FORK) &&  !state.getType().equals(StateType.JOIN) && !state.getType().equals(StateType.CHOICE)).forEach(state -> System.out.println(state.getName() + " - " + state.getType()));
+        states.stream().filter(state -> !state.getType().equals(StateType.FORK) &&  !state.getType().equals(StateType.JOIN) && !state.getType().equals(StateType.CHOICE)).forEach(state -> System.out.println(state.getName() + " - " + state.getType()));
     }
 
     public void printTransitions() {
-        getTransitions().forEach(transition-> System.out.println(transition.getStartState().getName() + " --> " + transition.getEndState().getName()));
+        transitions.forEach(transition-> System.out.println(transition.getStartState().getName() + " --> " + transition.getEndState().getName()));
     }
 }
