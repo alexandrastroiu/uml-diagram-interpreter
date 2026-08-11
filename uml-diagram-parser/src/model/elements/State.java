@@ -10,7 +10,6 @@ public class State {
     private String name;
     private String alias;
     private StateType type;
-    private Set<State> substates;
 
     // Constructor
 
@@ -18,7 +17,6 @@ public class State {
         this.name = "";
         this.alias = "";
         this.type = StateType.SIMPLE;
-        this.substates = new HashSet<State>();
     }
 
     // Getters, setters
@@ -37,14 +35,6 @@ public class State {
 
     public void setType(StateType type) {
         this.type = type;
-    }
-
-    public Set<State> getSubstates() {
-        return substates;
-    }
-
-    public void setSubstates(Set<State> substates) {
-        this.substates = substates;
     }
 
     public String getAlias() {
