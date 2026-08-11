@@ -39,9 +39,7 @@ public class DiagramDetector {
                 if (!line.isBlank()) {
                     String trimmedLine = line.trim();
                     if (Pattern.matches("^flowchart\\s+(TB|TD|BT|RL|LR)\\s*$", trimmedLine)) {
-                        return DiagramType.ACTIVITY;
-                    } else if (Pattern.matches("^flowchart\\s+(TB|TD|BT|RL|LR)\\s*$", trimmedLine)) {
-                        return DiagramType.USECASE;
+                        return DiagramType.FLOWCHART;
                     } else if (Pattern.matches("^stateDiagram(-v2)?\\s*$", trimmedLine)) {
                         return DiagramType.STATE;
                     }
