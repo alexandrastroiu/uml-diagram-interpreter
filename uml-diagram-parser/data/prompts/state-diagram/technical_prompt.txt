@@ -1,0 +1,7 @@
+Generate a UML State Diagram in PlantUML syntax for performing a transaction using an ATM System.
+The diagram should include:
+- One Initial State and one Final State
+- Include at least the following States: Idle, Reading card, Requesting PIN, Reading PIN, Displaying transaction list, Processing transaction, Performing transaction, Printing receipt, Ejecting card.
+- Transitions connect states in the correct order.
+- Use Choice States with guard conditions for: card verification, PIN verification, selecting a type of transaction, checking account balance, transaction confirmation, performing another transaction or ending the session.
+- Use at least the following labels for guard conditions: Valid card, Invalid card, Valid PIN, Invalid PIN, Transaction chosen, Insufficient funds, Available funds, Successful transaction, Failed transaction, Another transaction, Logout.

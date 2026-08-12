@@ -1,0 +1,61 @@
+@startuml
+title ATM System - Perform a Transaction
+
+[*] --> Idle
+
+state "Reading card" as ReadCard
+state "Requesting PIN" as RequestPIN
+state "Reading PIN" as ReadPIN
+state "Displaying transaction list" as TransactionList
+state "Processing transaction" as ProcessTransaction
+state "Performing transaction" as PerformTransaction
+state "Printing receipt" as PrintReceipt
+state "Ejecting card" as EjectCard
+
+Idle --> ReadCard : Insert card
+
+state CardChoice <<choice>>
+
+ReadCard --> CardChoice
+CardChoice --> RequestPIN : [Valid card]
+CardChoice --> EjectCard : [Invalid card]
+
+RequestPIN --> ReadPIN : Enter PIN
+
+state PINChoice <<choice>>
+
+ReadPIN --> PINChoice
+PINChoice --> TransactionList : [Valid PIN]
+PINChoice --> RequestPIN : [Invalid PIN]
+
+state TransactionChoice <<choice>>
+
+TransactionList --> TransactionChoice : [Transaction chosen]
+TransactionChoice --> ProcessTransaction : Withdraw
+TransactionChoice --> ProcessTransaction : Deposit
+TransactionChoice --> ProcessTransaction : Transfer
+TransactionChoice --> ProcessTransaction : Balance inquiry
+
+state BalanceChoice <<choice>>
+
+ProcessTransaction --> BalanceChoice
+BalanceChoice --> PerformTransaction : [Available funds]
+BalanceChoice --> TransactionList : [Insufficient funds]
+
+state ResultChoice <<choice>>
+
+PerformTransaction --> ResultChoice
+ResultChoice --> PrintReceipt : [Successful transaction]
+ResultChoice --> TransactionList : [Failed transaction]
+
+PrintReceipt --> ContinueChoice
+
+state ContinueChoice <<choice>>
+
+ContinueChoice --> TransactionList : [Another transaction]
+ContinueChoice --> EjectCard : [Logout]
+
+EjectCard --> Idle
+Idle --> [*]
+
+@enduml

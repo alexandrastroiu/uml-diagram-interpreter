@@ -1,0 +1,78 @@
+@startuml
+hide empty description
+
+skinparam shadowing false
+skinparam state {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+
+[*] --> Welcome
+
+state Welcome : Display "Welcome" screen
+
+Welcome --> ReadingCard : Customer inserts\nDebit/Credit Card
+
+state ReadingCard : Read card details securely
+
+ReadingCard --> AwaitingPIN : Card read successfully
+ReadingCard --> EjectingCard : Authentication failed
+ReadingCard --> EjectingCard : Customer cancels
+
+state AwaitingPIN : Wait for PIN entry
+
+AwaitingPIN --> Authenticating : PIN entered
+AwaitingPIN --> EjectingCard : Customer cancels
+
+state Authenticating
+Authenticating : Encrypt card & PIN
+Authenticating : Send request to ATM Processor
+Authenticating : Processor forwards request to Bank
+
+Authenticating --> SelectTransaction : Authentication approved
+Authenticating --> EjectingCard : Authentication denied
+Authenticating --> EjectingCard : Customer cancels
+
+state SelectTransaction
+SelectTransaction : Select transaction type
+SelectTransaction : Withdraw / Balance Inquiry / Transfer
+
+SelectTransaction --> EnterTransactionDetails : Transaction selected
+SelectTransaction --> EjectingCard : Customer cancels
+
+state EnterTransactionDetails
+EnterTransactionDetails : Enter amount,\naccount, destination,\nreceipt preference
+
+EnterTransactionDetails --> AuthorizeTransaction : Submit details
+EnterTransactionDetails --> EjectingCard : Customer cancels
+
+state AuthorizeTransaction
+AuthorizeTransaction : Send encrypted\ntransaction request
+AuthorizeTransaction : Bank approves or denies
+
+AuthorizeTransaction --> ExecuteTransaction : Approved
+AuthorizeTransaction --> TransactionDenied : Denied
+
+state ExecuteTransaction
+ExecuteTransaction : Execute transaction
+
+ExecuteTransaction --> PrintReceipt : Receipt requested
+ExecuteTransaction --> EjectingCard : No receipt requested
+
+state PrintReceipt : Print receipt
+PrintReceipt --> EjectingCard
+
+state TransactionDenied
+TransactionDenied : Display transaction denied
+TransactionDenied --> EjectingCard
+
+state EjectingCard : Eject card
+
+EjectingCard --> SessionEnded
+
+state SessionEnded : End session
+
+SessionEnded --> Welcome : Ready for next customer
+
+@enduml

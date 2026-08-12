@@ -1,0 +1,83 @@
+@startuml
+left to right direction
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor Customer
+actor "Bank System" as Bank
+actor "Maintenance Staff" as Staff
+
+rectangle "ATM System" {
+
+    usecase "Start ATM Session" as UC_Start
+    usecase "Insert Card" as UC_Insert
+    usecase "Read Card Details\nSecurely" as UC_Read
+    usecase "Authenticate Customer" as UC_Auth
+    usecase "Enter PIN" as UC_PIN
+    usecase "Validate Credentials" as UC_Validate
+
+    usecase "Perform Transaction" as UC_Transaction
+    usecase "Withdraw Cash" as UC_Withdraw
+    usecase "Deposit Funds" as UC_Deposit
+    usecase "Check Balance" as UC_Balance
+    usecase "Transfer Funds" as UC_Transfer
+    usecase "Pay Bills" as UC_BillPay
+
+    usecase "Request Transaction Approval" as UC_Approve
+    usecase "Execute Approved Transaction" as UC_Execute
+    usecase "Print Receipt" as UC_Receipt
+    usecase "Eject Card" as UC_Eject
+    usecase "End Transaction" as UC_End
+
+    usecase "Maintain ATM" as UC_Maintain
+    usecase "Clean ATM" as UC_Clean
+    usecase "Repair Hardware" as UC_Repair
+    usecase "Update Software" as UC_Software
+    usecase "Apply Security Updates" as UC_Security
+}
+
+' Customer interactions
+Customer --> UC_Start
+Customer --> UC_Transaction
+
+' Session startup
+UC_Start .> UC_Insert : <<include>>
+UC_Start .> UC_Read : <<include>>
+UC_Start .> UC_Auth : <<include>>
+
+UC_Auth .> UC_PIN : <<include>>
+UC_Auth .> UC_Validate : <<include>>
+
+Bank --> UC_Validate
+
+' Transaction specializations
+UC_Withdraw -|> UC_Transaction
+UC_Deposit  -|> UC_Transaction
+UC_Balance  -|> UC_Transaction
+UC_Transfer -|> UC_Transaction
+UC_BillPay  -|> UC_Transaction
+
+' Bank approval
+UC_Transaction .> UC_Approve : <<include>>
+Bank --> UC_Approve
+
+' Successful completion
+UC_Transaction .> UC_Execute : <<include>>
+UC_Receipt .> UC_Execute : <<extend>>
+note on link
+  Receipt requested
+end note
+
+UC_Transaction .> UC_Eject : <<include>>
+UC_Transaction .> UC_End : <<include>>
+
+' Maintenance
+Staff --> UC_Maintain
+
+UC_Maintain .> UC_Clean : <<include>>
+UC_Maintain .> UC_Repair : <<include>>
+UC_Maintain .> UC_Software : <<include>>
+UC_Maintain .> UC_Security : <<include>>
+
+@enduml

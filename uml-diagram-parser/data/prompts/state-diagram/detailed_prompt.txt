@@ -1,0 +1,7 @@
+Generate a UML State Diagram in PlantUML syntax for performing a transaction using an ATM System.
+The ATM displays a "Welcome" screen and waits for a customer.
+The customer inserts a debit or credit card into the ATM's card reader. The ATM reads the card details securely.
+If the authentication fails or the customer cancels the session, the ATM ejects the card and the session ends.
+After the card was read successfully, the ATM will wait for the customer to enter the Personal Identification Number (PIN).
+The ATM sends an encrypted request with the information to an ATM processor. The information is sent to the bank to approve or deny the transaction. The ATM requests the type of transaction to occur (such as withdraw cash, balance inquiry, transfer) and waits for the customers to select the type of transaction and specify other details. If the transaction is approved, the ATM executes it, prints the receipt if requested, ejects the card and ends the transaction.
+The ATM displays the "Welcome" screen for the next user.

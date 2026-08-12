@@ -1,0 +1,67 @@
+@startuml
+
+title ATM Transaction Process
+
+start
+
+partition Customer {
+    :Insert debit or credit card;
+}
+
+partition ATM {
+    :Read card details securely;
+    :Request PIN;
+}
+
+partition Customer {
+    :Enter PIN using keypad;
+}
+
+partition ATM {
+    :Display transaction types;
+}
+
+partition Customer {
+    :Select transaction type;
+    :Enter transaction details;
+}
+
+partition ATM {
+    :Encrypt transaction request;
+    :Send request to ATM Processor;
+}
+
+partition "ATM Processor" {
+    :Forward request to Bank;
+}
+
+partition Bank {
+    :Validate card, PIN, and account;
+    if (Transaction approved?) then (Yes)
+        :Send approval;
+    else (No)
+        :Send denial;
+    endif
+}
+
+partition ATM {
+    if (Approved?) then (Yes)
+        :Execute transaction;
+
+        if (Receipt requested?) then (Yes)
+            :Print receipt;
+        else (No)
+        endif
+
+    else (No)
+        :Display "Transaction Denied";
+    endif
+
+    :Eject card;
+    :End transaction;
+    :Display "Welcome" screen;
+}
+
+stop
+
+@enduml

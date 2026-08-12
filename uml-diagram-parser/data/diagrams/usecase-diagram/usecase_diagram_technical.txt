@@ -1,0 +1,67 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor Customer
+actor Bank
+actor "Maintenance staff" as MaintenanceStaff
+
+rectangle "ATM System" {
+
+  usecase "Insert card" as UC1
+  usecase "Read card" as UC2
+  usecase "Request PIN" as UC3
+  usecase "Validate card" as UC4
+  usecase "Validate PIN" as UC5
+  usecase "Select transaction\n(Cash withdrawal,\nDeposits,\nBalance inquiry,\nFund transfer,\nBill payment)" as UC6
+  usecase "Execute transaction" as UC7
+  usecase "Print receipt" as UC8
+  usecase "Eject card" as UC9
+  usecase "End transaction" as UC10
+  usecase "Approve transaction" as UC11
+  usecase "Perform maintenance" as UC12
+  usecase "Fix hardware" as UC13
+  usecase "Update software" as UC14
+  usecase "Clean ATM" as UC15
+}
+
+'=========================
+' Actor Associations
+'=========================
+
+Customer -- UC1
+Customer -- UC3
+Customer -- UC6
+Customer -- UC7
+Customer -- UC8
+Customer -- UC9
+Customer -- UC10
+
+Bank -- UC4
+Bank -- UC5
+Bank -- UC11
+
+MaintenanceStaff -- UC12
+MaintenanceStaff -- UC13
+MaintenanceStaff -- UC14
+MaintenanceStaff -- UC15
+
+'=========================
+' Include Relationships
+'=========================
+
+UC6 .> UC4  : <<include>>
+UC6 .> UC5  : <<include>>
+
+UC7 .> UC6  : <<include>>
+UC7 .> UC11 : <<include>>
+
+'=========================
+' Extend Relationships
+'=========================
+
+UC12 .> UC15 : <<extend>>
+UC12 .> UC13 : <<extend>>
+UC12 .> UC14 : <<extend>>
+
+@enduml

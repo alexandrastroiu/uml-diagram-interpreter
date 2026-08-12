@@ -1,0 +1,143 @@
+@startuml
+
+title ATM Transaction Process
+
+|Customer|
+start
+:Insert card;
+
+|ATM System|
+:Read card;
+
+if (Card verified?) then ([Valid])
+    :Request PIN;
+
+    |Customer|
+    :Enter PIN;
+
+    |ATM System|
+    :Authorize card;
+
+    |Bank|
+    :Verify PIN;
+
+    if (PIN verified?) then ([Valid])
+
+        repeat
+
+            |ATM System|
+            :Display transaction list;
+            :Request transaction type;
+
+            |Customer|
+            :Select transaction type;
+
+            |ATM System|
+            if (Transaction type?) then ([Withdraw Cash])
+
+                |Bank|
+                :Check account balance;
+
+                if (Sufficient balance?) then ([Yes])
+                    :Authorize transaction;
+
+                    |ATM System|
+                    :Request transaction confirmation;
+
+                    |Customer|
+                    if (Confirm transaction?) then ([Yes])
+
+                        |ATM System|
+                        :Execute transaction;
+                        :Print receipt;
+
+                    else ([No])
+
+                        |ATM System|
+                        :Cancel transaction;
+
+                    endif
+
+                else ([No])
+
+                    |ATM System|
+                    :Display insufficient funds;
+
+                endif
+
+            elseif ([Balance Inquiry])
+
+                |Bank|
+                :Authorize transaction;
+                :Retrieve account balance;
+
+                |ATM System|
+                :Execute transaction;
+                :Display balance;
+                :Print receipt;
+
+            else ([Transfer])
+
+                |Bank|
+                :Check account balance;
+
+                if (Sufficient balance?) then ([Yes])
+                    :Authorize transaction;
+
+                    |ATM System|
+                    :Request transaction confirmation;
+
+                    |Customer|
+                    if (Confirm transaction?) then ([Yes])
+
+                        |ATM System|
+                        :Execute transaction;
+                        :Print receipt;
+
+                    else ([No])
+
+                        |ATM System|
+                        :Cancel transaction;
+
+                    endif
+
+                else ([No])
+
+                    |ATM System|
+                    :Display insufficient funds;
+
+                endif
+
+            endif
+
+            |ATM System|
+            :Ask whether to perform another transaction;
+
+            |Customer|
+
+        repeat while (Another transaction?) is ([Yes])
+
+        -> [No]
+
+        |ATM System|
+        :Eject card;
+        stop
+
+    else ([Invalid])
+
+        |ATM System|
+        :Display PIN error;
+        :Eject card;
+        stop
+
+    endif
+
+else ([Invalid])
+
+    :Display card error;
+    :Eject card;
+    stop
+
+endif
+
+@enduml

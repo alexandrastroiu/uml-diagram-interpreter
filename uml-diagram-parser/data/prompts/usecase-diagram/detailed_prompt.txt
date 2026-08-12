@@ -1,0 +1,7 @@
+Generate a UML Use Case Diagram  in PlantUML syntax for an ATM System.
+The system allows customers to  insert a debit or credit card into the ATM's card reader.
+The ATM  reads the card details securely and requests the customer to enter the Personal Identification Number (PIN) for authentication.
+It allows the user to perform transactions such as: cash withdrawals, deposits, balance inquiries, fund transfers and bill payments.
+If the transaction is approved, the ATM executes it, prints the receipt if requested, ejects the card and ends the transaction.
+The system communicates with the bank to validate credentials and approve transactions.
+Maintenance staff performs periodic maintenance to clean the ATM, fix broken hardware and make software and security updates.

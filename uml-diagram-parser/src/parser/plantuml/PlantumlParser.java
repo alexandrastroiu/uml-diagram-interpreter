@@ -198,35 +198,36 @@ public class PlantumlParser implements DiagramParser {
         StringBuilder currentGroup = new StringBuilder(CAPACITY);
         boolean readingActivityLabel = false;
 
-        //TODO relationships
         for (String line : lines) {
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
 
                 if (trimmedLine.equals(startPattern)) {
                     ActivityNode startNode = new ActivityNode("Start", ActivityNodeType.START, currentSwimlane.toString(), currentGroup.toString());
-                    activityDiagram.getActivities().add(startNode);
+                    activityDiagram.addActivity(startNode);
                 }
 
                 if (trimmedLine.equals(endPattern.get(0)) || trimmedLine.equals(endPattern.get(1))) {
                     ActivityNode endNode = new ActivityNode("Stop", ActivityNodeType.STOP, currentSwimlane.toString(), currentGroup.toString());
-                    activityDiagram.getActivities().add(endNode);
+                    activityDiagram.addActivity(endNode);
                 }
 
                 if (Pattern.matches(forkPattern, trimmedLine)) {
                     ActivityNode forkNode = new ActivityNode("Fork", ActivityNodeType.FORK, currentSwimlane.toString(), currentGroup.toString());
-                    activityDiagram.getActivities().add(forkNode);
+                    activityDiagram.addActivity(forkNode);
                 }
 
                 if (Pattern.matches(switchPattern, trimmedLine) || Pattern.matches(conditionalPattern, trimmedLine)) {
                     ActivityNode conditionalNode = new ActivityNode("Condition", ActivityNodeType.CONDITIONAL, currentSwimlane.toString(), currentGroup.toString());
-                    activityDiagram.getActivities().add(conditionalNode);
+                    activityDiagram.addActivity(conditionalNode);
                 }
 
                 if (Pattern.matches(mergePattern, trimmedLine)) {
                     ActivityNode mergeNode = new ActivityNode("Merge", ActivityNodeType.MERGE, currentSwimlane.toString(), currentGroup.toString());
-                    activityDiagram.getActivities().add(mergeNode);
+                    activityDiagram.addActivity(mergeNode);
                 }
+
+                // Activitate
 
                 if (Pattern.matches(labelStart, trimmedLine)) {
                     if (!currentActivityLabel.isEmpty()) {
@@ -246,7 +247,7 @@ public class PlantumlParser implements DiagramParser {
                     String activityName = currentActivityLabel.toString();
                     ActivityNode activityNode = new ActivityNode(activityName, ActivityNodeType.ACTIVITY);
                     activityNode.setSwimlane(currentSwimlane.toString());
-                    activityDiagram.getActivities().add(activityNode);
+                    activityDiagram.addActivity(activityNode);
                 }
 
                 if (Pattern.matches(swimlanePattern, trimmedLine)) {
@@ -305,8 +306,7 @@ public class PlantumlParser implements DiagramParser {
         String actor = "actor";
         String alias = " as ";
 
-        // TODO
-        for (String line : lines) { /// TODO refactor code
+        for (String line : lines) {
 
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
@@ -381,6 +381,8 @@ public class PlantumlParser implements DiagramParser {
             }
         }
 
+        // Relatii
+
         for (String line : lines) {
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
@@ -433,6 +435,7 @@ public class PlantumlParser implements DiagramParser {
         useCaseDiagram.setUseCasesCount(useCaseDiagram.getUseCases().size());
         useCaseDiagram.addSetElements(useCaseDiagram.getActors(), useCaseDiagram.getActorLookup());
         useCaseDiagram.setActorsCount(useCaseDiagram.getActors().size());
+        useCaseDiagram.setElements(useCaseDiagram.getUseCasesCount() + useCaseDiagram.getActorsCount());
         useCaseDiagram.setLinksCount(useCaseDiagram.getLinks().size());
 
         return useCaseDiagram;

@@ -4,14 +4,12 @@ import enums.ActivityNodeType;
 import model.elements.ActivityNode;
 import model.relationships.ControlFlow;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ActivityDiagram extends UmlDiagram {
 
     private LinkedHashSet<ActivityNode> activities;
+    private LinkedHashMap<String, ActivityNode> activityLookup;
     private LinkedHashSet<String> swimlanes;
     private LinkedHashSet<String> groups;
     private LinkedHashSet<ControlFlow> controlFlows;
@@ -27,6 +25,7 @@ public class ActivityDiagram extends UmlDiagram {
     public ActivityDiagram() {
         super();
         activities = new LinkedHashSet<>();
+        activityLookup = new LinkedHashMap<>();
         swimlanes = new LinkedHashSet<>();
         groups = new LinkedHashSet<>();
         controlFlows = new LinkedHashSet<>();
@@ -120,6 +119,14 @@ public class ActivityDiagram extends UmlDiagram {
         this.conditionalNodes = conditionalNodes;
     }
 
+    public LinkedHashMap<String, ActivityNode> getActivityLookup() {
+        return activityLookup;
+    }
+
+    public void setActivityLookup(LinkedHashMap<String, ActivityNode> activityLookup) {
+        this.activityLookup = activityLookup;
+    }
+
     public int countNodes(ActivityNodeType type) {
         List<ActivityNode> nodes = this.activities.stream().filter(activity -> activity.getType().equals(type)).toList();
         return nodes.size();
@@ -128,6 +135,13 @@ public class ActivityDiagram extends UmlDiagram {
     public int countElements() {
         List<ActivityNode> elements = this.activities.stream().filter(activity -> !activity.getType().equals(ActivityNodeType.CONDITIONAL) && !activity.getType().equals(ActivityNodeType.FORK) && !activity.getType().equals(ActivityNodeType.MERGE)).toList();
         return elements.size();
+    }
+
+    public void addActivity(ActivityNode activityNode) {
+        getActivities().add(activityNode);
+        if (!activityLookup.containsKey(activityNode.getName())) {
+            activityLookup.put(activityNode.getName(), activityNode);
+        }
     }
 
     public void printActivities() {

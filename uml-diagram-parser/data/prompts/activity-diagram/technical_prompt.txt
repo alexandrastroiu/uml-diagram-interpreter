@@ -1,0 +1,7 @@
+Generate a UML Activity Diagram in PlantUML syntax for the transaction process in an ATM System.
+The diagram should include:
+- Swimlanes for modelling the interactions between the customer, the ATM System and the bank
+- One Initial Node and one Final Node
+- Include at least the following Activity Nodes: Insert card, Read card, Request PIN, Enter PIN, Authorize card, Display transaction list, Request transaction type (such as withdraw cash, balance inquiry, transfer) , Select transaction type, Authorize transaction, Execute transaction, Print receipt, Eject card.
+- Control Flows connect activities in the correct order.
+- Decision Nodes with guard conditions for: card verification, PIN verification, selecting a type of transaction, checking account balance, transaction confirmation, performing another transaction or ending the session.
