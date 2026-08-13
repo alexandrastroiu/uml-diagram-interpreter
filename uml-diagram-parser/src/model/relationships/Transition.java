@@ -8,6 +8,8 @@ public class Transition {
     private State endState;
     private String transitionDescription;
 
+    // Getters, Setters
+
     public State getStartState() {
         return startState;
     }

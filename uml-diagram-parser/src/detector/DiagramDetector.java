@@ -12,6 +12,8 @@ public class DiagramDetector {
 
     public DiagramDetector() {}
 
+    // Metoda pentru a recunoaste tipul unei diagrame in limbajul PlantUML/Mermaid
+
     public DiagramType detectDiagramType(List<String> lines, Language language) {
 
         if (language.equals(Language.PLANTUML)) {

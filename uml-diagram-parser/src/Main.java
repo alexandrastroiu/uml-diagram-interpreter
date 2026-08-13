@@ -16,7 +16,7 @@ public class Main {
         System.out.println("\n===========================================================================================================================================\n");
         comparator.comparePromptTypes(Language.PLANTUML, DiagramType.ACTIVITY);
         System.out.println("\n=========================================================================================================================================================");
-        System.out.println("\nCompara diagramele de cazuri de utilizare generate in limbajul PlantUML cu trei tipuri de prompt-uri diferite (general, de tip specificatie, tehnic):");
+        System.out.println("\nCompara diagramele cazurilor de utilizare generate in limbajul PlantUML cu trei tipuri de prompt-uri diferite (general, de tip specificatie, tehnic):");
         System.out.println("\n=========================================================================================================================================================\n");
         comparator.comparePromptTypes(Language.PLANTUML, DiagramType.USECASE);
     }

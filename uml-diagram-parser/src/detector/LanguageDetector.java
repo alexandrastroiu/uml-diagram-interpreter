@@ -10,6 +10,8 @@ public class LanguageDetector {
 
     public LanguageDetector() {}
 
+    // Metoda pentru a recunoaste limbajul unei diagrame
+
     public Language detectDiagramLanguage(List<String> lines) {
 
         for (String line : lines) {

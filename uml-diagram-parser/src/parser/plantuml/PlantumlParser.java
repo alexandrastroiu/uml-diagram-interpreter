@@ -6,14 +6,12 @@ import model.diagrams.StateDiagram;
 import model.diagrams.UmlDiagram;
 import model.diagrams.UseCaseDiagram;
 import model.elements.ActivityNode;
-import model.elements.State;
 import model.elements.UseCaseNode;
 import model.relationships.Link;
-import model.relationships.Transition;
 import parser.DiagramParser;
+import parser.state_diagram.StateDiagramParser;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public class PlantumlParser implements DiagramParser {
@@ -25,7 +23,7 @@ public class PlantumlParser implements DiagramParser {
         if (language.equals(Language.PLANTUML)) {
             switch (type) {
                 case STATE:
-                    return parseStateDiagram(lines);
+                    return parseStateDiagram(lines, language, type);
                 case ACTIVITY:
                     return parseActivityDiagram(lines);
                 case USECASE:
@@ -37,141 +35,14 @@ public class PlantumlParser implements DiagramParser {
         return umlDiagram;
     }
 
-    // Interpreteaza diagrama de stare
+    // Metoda pentru interpretarea diagramei de stare in limbajul PlantUML
 
-    public StateDiagram parseStateDiagram(List<String> lines) {
-        StateDiagram stateDiagram = new StateDiagram();
-        stateDiagram.setLanguage(Language.PLANTUML);
-        stateDiagram.setType(DiagramType.STATE);
-        stateDiagram.setLinesCount(lines.size());
-
-        Map<String, StateType> stereotypes = Map.ofEntries(
-                Map.entry("<<start>>", StateType.INITIAL),
-                Map.entry("<<end>>", StateType.FINAL),
-                Map.entry("<<choice>>", StateType.CHOICE),
-                Map.entry("<<fork>>", StateType.FORK),
-                Map.entry("<<join>>", StateType.JOIN)
-        );
-
-        String initialPattern = "[*] ";
-        String finalPattern = " [*]";
-        String statePattern = "state ";
-        String colorPattern = " #";
-        String compositePattern = " {";
-        String aliasPattern = "^state [\\s\\S]+ as [\\s\\S]+$";
-        String alias = " as ";
-        String transitionPattern = "^[\\s\\S]+ -[a-zA-Z0-9,#\\[\\]]*-> [\\s\\S]+$";
-        String startPattern = " -";
-        String endPattern = "-> ";
-        String stateDescription = " :";
-
-        for (String line : lines) {
-            if (!line.isBlank()) {
-                String trimmedLine = line.trim();
-
-                // Stare
-
-                if (trimmedLine.startsWith(statePattern)) {
-                    State state = new State();
-                    int index1 = statePattern.length();
-                    String name = trimmedLine.substring(index1);
-                    String stateAlias = "";
-
-                    if (trimmedLine.endsWith(compositePattern)) {
-                        int index6 = name.indexOf(compositePattern);
-                        name = name.substring(0, index6).trim();
-
-                        state.setType(StateType.COMPOSITE);
-                    }
-
-                    if (trimmedLine.contains(colorPattern)) {
-                        int index5 = name.indexOf(colorPattern);
-                        name = name.substring(0, index5).trim();
-                    }
-
-                    for (String key : stereotypes.keySet()) {
-                        if (trimmedLine.contains(key)) {
-                            int index4 = name.indexOf(key);
-                            name = name.substring(0, index4).trim();
-
-                            state.setType(stereotypes.get(key));
-                        }
-                    }
-
-                    if (Pattern.matches(aliasPattern, trimmedLine)) {
-                        int index2 = name.indexOf(alias);
-                        int index3 = index2 + alias.length();
-
-                        stateAlias = name.substring(index3).replace("\"", "").trim();
-                        name = name.substring(0, index2).trim();
-                    }
-
-                    state.setName(name);
-                    state.setAlias(stateAlias);
-                    stateDiagram.addState(state);
-                }
-
-                // Tranzitie
-
-                if (Pattern.matches(transitionPattern, trimmedLine)) {
-                    Transition transition = new Transition();
-                    State startState = new State();
-                    State endState = new State();
-                    String name;
-
-                    if (trimmedLine.startsWith(initialPattern)) {
-                        startState.setName("Initial State");
-                        startState.setType(StateType.INITIAL);
-                    }
-                    else {
-                        int indexStart = trimmedLine.indexOf(startPattern);
-
-                        name = trimmedLine.substring(0, indexStart).replace("\"", "").trim();
-                        startState.setName(name);
-                    }
-
-                    int indexEnd = trimmedLine.indexOf(endPattern);
-                    int indexStateEnd = indexEnd + endPattern.length();
-
-                    if (trimmedLine.contains(stateDescription)) {
-                        int indexDescription = trimmedLine.indexOf(stateDescription);
-                        name = trimmedLine.substring(indexStateEnd, indexDescription).replace("\"", "").trim();
-                        String description = trimmedLine.substring(indexDescription + stateDescription.length()).trim();
-
-                        transition.setTransitionDescription(description);
-                    }
-                    else {
-                        name = trimmedLine.substring(indexStateEnd).replace("\"", "").trim();
-                    }
-
-                    if (name.endsWith(finalPattern.trim())) {
-                        endState.setName("Final State");
-                        endState.setType(StateType.FINAL);
-                    } else {
-                        endState.setName(name);
-                    }
-
-                    transition.addTransitionStates(stateDiagram, startState, endState);
-                    stateDiagram.addState(startState);
-                    stateDiagram.addState(endState);
-                    stateDiagram.getTransitions().add(transition);
-                }
-            }
-        }
-
-        stateDiagram.setTransitionCount(stateDiagram.getTransitions().size());
-        stateDiagram.setRelationships(stateDiagram.getTransitionCount());
-        stateDiagram.addSetElements(stateDiagram.getStates(), stateDiagram.getStateLookup());
-        stateDiagram.setForkCount(stateDiagram.countNodes(StateType.FORK));
-        stateDiagram.setJoinCount(stateDiagram.countNodes(StateType.JOIN));
-        stateDiagram.setChoiceStates(stateDiagram.countNodes(StateType.CHOICE));
-        stateDiagram.setCompositeStates(stateDiagram.countNodes(StateType.COMPOSITE));
-        stateDiagram.setElements(stateDiagram.countElements());
-
-        return stateDiagram;
+    public StateDiagram parseStateDiagram(List<String> lines, Language language, DiagramType type) {
+        StateDiagramParser stateDiagramParser = new StateDiagramParser();
+        return stateDiagramParser.parseStateDiagram(lines, language, type);
     }
 
-    // Interpreteaza diagrama de activitati
+    // Metoda pentru interpretarea diagramei de activitati in limbajul PlantUML
 
     public ActivityDiagram parseActivityDiagram(List<String> lines) {
         ActivityDiagram activityDiagram = new ActivityDiagram();
@@ -227,7 +98,7 @@ public class PlantumlParser implements DiagramParser {
                     activityDiagram.addActivity(mergeNode);
                 }
 
-                // Activitate
+                // Identifica o activitate
 
                 if (Pattern.matches(labelStart, trimmedLine)) {
                     if (!currentActivityLabel.isEmpty()) {
@@ -285,7 +156,7 @@ public class PlantumlParser implements DiagramParser {
         return activityDiagram;
     }
 
-    // Interpreteaza diagrama de cazuri de utilizare
+    // Metoda pentru interpretarea diagramei cazurilor de utilizare in limbajul PlantUML
 
     public UseCaseDiagram parseUseCaseDiagram(List<String> lines) {
         UseCaseDiagram useCaseDiagram = new UseCaseDiagram();
@@ -311,7 +182,7 @@ public class PlantumlParser implements DiagramParser {
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
 
-                // Caz de utilizare
+                // Identifica un caz de utilizare
 
                 if (Pattern.matches(useCaseDefinition, trimmedLine)) {
                     int nameStart = usecase.length();
@@ -345,7 +216,7 @@ public class PlantumlParser implements DiagramParser {
                     useCaseDiagram.addUseCaseNode(newUseCase, useCaseDiagram.getUseCaseLookup());
                 }
 
-                // Actor
+                // Identifica un actor
 
                 if (Pattern.matches(actorDefinition, trimmedLine)) {
                     int nameStart = actor.length();
@@ -381,7 +252,7 @@ public class PlantumlParser implements DiagramParser {
             }
         }
 
-        // Relatii
+        // Identifica relatiile dintre elemente
 
         for (String line : lines) {
             if (!line.isBlank()) {
