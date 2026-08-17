@@ -4,6 +4,7 @@ import enums.ActivityNodeType;
 
 public class ActivityNode {
     private String name;
+    private String alias;
     private ActivityNodeType type;
     private String swimlane;
     private String group;
@@ -12,6 +13,7 @@ public class ActivityNode {
 
     public ActivityNode() {
         this.name = "";
+        this.alias = "";
         this.type = ActivityNodeType.ACTIVITY;
         this.swimlane = "";
         this.group = "";
@@ -20,6 +22,16 @@ public class ActivityNode {
     public ActivityNode(String name, ActivityNodeType type) {
         this.name = name;
         this.type = type;
+    }
+
+    public ActivityNode(String name, String alias, ActivityNodeType type, String swimlane) {
+        this.name = name;
+        this.alias = alias;
+        this.type = type;
+
+        if (!swimlane.isEmpty()) {
+            this.swimlane = swimlane;
+        }
     }
 
     public ActivityNode(String name, ActivityNodeType type, String swimlane, String group) {
@@ -67,5 +79,13 @@ public class ActivityNode {
 
     public void setGroup(String group) {
         this.group = group;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 }
