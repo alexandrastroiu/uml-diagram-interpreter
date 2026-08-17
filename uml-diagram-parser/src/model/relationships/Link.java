@@ -73,6 +73,12 @@ public class Link {
             }
             return useCaseDiagram.getActorLookup().get(name);
         }
-        return null;
+        else {
+            if (!useCaseDiagram.isMermaidElement(elementName)) {
+                UseCaseNode element = new UseCaseNode(name, NodeType.ELEMENT);
+                useCaseDiagram.addUseCaseNode(element, useCaseDiagram.getElementLookup());
+            }
+            return useCaseDiagram.getElementLookup().get(name);
+        }
     }
 }

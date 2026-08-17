@@ -11,8 +11,10 @@ public class UseCaseDiagram extends UmlDiagram {
 
     private LinkedHashMap<String, UseCaseNode> actorLookup;
     private LinkedHashMap<String, UseCaseNode> useCaseLookup;
+    private LinkedHashMap<String, UseCaseNode> elementLookup;
     private LinkedHashSet<UseCaseNode> actors;
     private LinkedHashSet<UseCaseNode> useCases;
+    private LinkedHashSet<UseCaseNode> diagramElements;
     private LinkedHashSet<Link> links;
     private int useCasesCount;
     private int actorsCount;
@@ -23,8 +25,10 @@ public class UseCaseDiagram extends UmlDiagram {
     public UseCaseDiagram() {
         this.actorLookup = new LinkedHashMap<>();
         this.useCaseLookup = new LinkedHashMap<>();
+        this.elementLookup = new LinkedHashMap<>();
         this.actors = new LinkedHashSet<>();
         this.useCases = new LinkedHashSet<>();
+        this.diagramElements = new LinkedHashSet<>();
         this.links = new LinkedHashSet<>();
         useCasesCount = 0;
         actorsCount = 0;
@@ -97,6 +101,22 @@ public class UseCaseDiagram extends UmlDiagram {
         this.useCaseLookup = useCaseLookup;
     }
 
+    public LinkedHashSet<UseCaseNode> getDiagramElements() {
+        return diagramElements;
+    }
+
+    public void setDiagramElements(LinkedHashSet<UseCaseNode> diagramElements) {
+        this.diagramElements = diagramElements;
+    }
+
+    public LinkedHashMap<String, UseCaseNode> getElementLookup() {
+        return elementLookup;
+    }
+
+    public void setElementLookup(LinkedHashMap<String, UseCaseNode> elementLookup) {
+        this.elementLookup = elementLookup;
+    }
+
     public void addUseCaseNode(UseCaseNode node, LinkedHashMap<String, UseCaseNode> map) {
         String name = node.getName();
         String alias = node.getAlias();
@@ -137,6 +157,10 @@ public class UseCaseDiagram extends UmlDiagram {
         String actorPattern = "^\\([\\s\\S]+\\)[\\s\\S]*$";
 
         return Pattern.matches(actorPattern, name);
+    }
+
+    public boolean isMermaidElement(String name) {
+        return elementLookup.containsKey(name);
     }
 
     public boolean useCaseExists(String name) {

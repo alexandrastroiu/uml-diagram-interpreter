@@ -1,12 +1,13 @@
 package parser.mermaid;
 
-import enums.ActivityNodeType;
-import enums.DiagramType;
-import enums.Language;
+import enums.*;
 import model.diagrams.ActivityDiagram;
 import model.diagrams.StateDiagram;
 import model.diagrams.UmlDiagram;
+import model.diagrams.UseCaseDiagram;
 import model.elements.ActivityNode;
+import model.elements.UseCaseNode;
+import model.relationships.Link;
 import parser.DiagramParser;
 import parser.state_diagram.StateDiagramParser;
 
@@ -26,7 +27,7 @@ public class MermaidParser implements DiagramParser {
                 case ACTIVITY:
                     return parseActivityDiagram(lines, language, type);
                 case USECASE:
-                    break;
+                    return parseUseCaseDiagram(lines, language, type);
                 default:
                     return umlDiagram;
             }
@@ -53,7 +54,7 @@ public class MermaidParser implements DiagramParser {
         String activityPattern = "^[A-Za-z0-9]+(\\([\\s\\S]+\\) | \\[[\\s\\S]+\\])$";
         String conditionalPattern = "^[A-Za-z0-9]+\\{[\\s\\S]+\\}$";
         String swimlanePattern = "^subgraph\\s+[\\S]+(\\[[\\s\\S]+\\])?$";
-        List <String> nameStart = List.of("(", "[");
+        List<String> nameStart = List.of("(", "[");
         String swimlaneStart = "subgraph";
 
         final int CAPACITY = 50;
@@ -68,7 +69,7 @@ public class MermaidParser implements DiagramParser {
                 if (Pattern.matches(activityPattern, trimmedLine)) {
                     int index = trimmedLine.contains(nameStart.get(0)) ? trimmedLine.indexOf(nameStart.get(0)) : trimmedLine.indexOf(nameStart.get(1));
                     String activityAlias = trimmedLine.substring(0, index).trim();
-                    String activityName = getActivityName(trimmedLine.substring(index + 1));
+                    String activityName = getElementName(trimmedLine.substring(index + 1));
                     ActivityNodeType activityType = getActivityType(activityName);
                     ActivityNode activityNode = new ActivityNode(activityName, activityAlias, activityType, currentSwimlane.toString());
                     activityDiagram.addActivity(activityNode);
@@ -92,11 +93,76 @@ public class MermaidParser implements DiagramParser {
             }
         }
 
+        activityDiagram.setElements(activityDiagram.countElements());
+        activityDiagram.setActivitiesCount(activityDiagram.getElements());
+        activityDiagram.setSwimlanesCount(activityDiagram.getSwimlanes().size());
+        activityDiagram.setConditionalNodes(activityDiagram.countNodes(ActivityNodeType.CONDITIONAL));
+
         return activityDiagram;
     }
 
-    private String getActivityName(String name) {
-        return name.replace("(", "").replace(")", "").replace("[", "").replace("]", "").trim();
+    // Metoda pentru interpretarea diagramei cazurilor de utilizare in limbajul Mermaid
+
+    public UseCaseDiagram parseUseCaseDiagram(List<String> lines, Language language, DiagramType type) {
+        UseCaseDiagram useCaseDiagram = new UseCaseDiagram();
+        useCaseDiagram.setLanguage(language);
+        useCaseDiagram.setType(type);
+        useCaseDiagram.setLinesCount(lines.size());
+
+        String elementPattern = "^[A-Za-z0-9]+(\\([\\s\\S]+\\) | \\[[\\s\\S]+\\])$";
+        List<String> linkPatterns = List.of(
+                "^\\S+\\s*-[\\s\\S]*->?\\s*\\S+$",
+                "^\\S+\\s*=[\\s\\S]*=>\\s*\\S+$"
+        );
+        List<String> linkStart = List.of(
+                "-",
+                "="
+        );
+        String linkEnd = ">";
+        List<String> nameStart = List.of("(", "[");
+
+        // Identifica elementele (cazuri de utilizare si actori)
+
+        for (String line : lines) {
+            if (!line.isBlank()) {
+                String trimmedLine = line.trim();
+
+                if (Pattern.matches(elementPattern, trimmedLine)) {
+                    int index = trimmedLine.contains(nameStart.get(0)) ? trimmedLine.indexOf(nameStart.get(0)) : trimmedLine.indexOf(nameStart.get(1));
+                    String elementAlias = trimmedLine.substring(0, index).trim();
+                    String elementName = getElementName(trimmedLine.substring(index + 1));
+                    UseCaseNode useCaseNode = new UseCaseNode(elementName, elementAlias, NodeType.ELEMENT);
+                    useCaseDiagram.addUseCaseNode(useCaseNode, useCaseDiagram.getElementLookup());
+                }
+            }
+        }
+
+        // Identifica relatiile dintre elemente
+
+        for (String line : lines) {
+            if (!line.isBlank()) {
+                String trimmedLine = line.trim();
+
+                if (Pattern.matches(linkPatterns.get(0), trimmedLine) || Pattern.matches(linkPatterns.get(1), trimmedLine)) {
+                    int linkStartIndex = trimmedLine.contains(linkStart.get(0)) ? trimmedLine.indexOf(linkStart.get(0)) : trimmedLine.indexOf(linkStart.get(1));
+                    int linkEndIndex = trimmedLine.contains("|") ? trimmedLine.lastIndexOf("|") : trimmedLine.indexOf(linkEnd);
+                    String element1 = getElementName(trimmedLine.substring(0, linkStartIndex));
+                    String element2 = getElementName(trimmedLine.substring(linkEndIndex + 1));
+                    Link link = new Link(getLinkType(trimmedLine));
+                    link.addLinkElements(useCaseDiagram, element1, element2);
+                    useCaseDiagram.getLinks().add(link);
+                }
+            }
+        }
+
+        useCaseDiagram.addSetElements(useCaseDiagram.getDiagramElements(), useCaseDiagram.getElementLookup());
+        useCaseDiagram.setLinksCount(useCaseDiagram.getLinks().size());
+
+        return useCaseDiagram;
+    }
+
+    private String getElementName(String name) {
+        return name.replace("(", "").replace(")", "").replace("[", "").replace("]", "").replace("\"", "").trim();
     }
 
     private ActivityNodeType getActivityType(String name) {
@@ -106,6 +172,18 @@ public class MermaidParser implements DiagramParser {
         if (name.equalsIgnoreCase("end")) {
             return ActivityNodeType.STOP;
         }
+
         return ActivityNodeType.ACTIVITY;
+    }
+
+    private LinkType getLinkType(String link) {
+        if (link.contains("<<extend>>")) {
+            return LinkType.EXTEND;
+        }
+        if (link.contains("<<include>>")) {
+            return LinkType.INCLUDE;
+        }
+
+        return LinkType.LINK;
     }
 }
