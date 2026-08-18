@@ -6,24 +6,27 @@ import java.util.regex.Pattern;
 
 public class LanguageDetector {
 
+    private static final String PLANTUML_START = "@startuml";
+    private static final String PLANTUML_END = "@enduml";
+
     // Default Constructor
 
     public LanguageDetector() {}
 
     // Metoda pentru a recunoaste limbajul unei diagrame
 
-    public Language detectDiagramLanguage(List<String> lines) {
+    public static Language detectDiagramLanguage(List<String> lines) {
 
         for (String line : lines) {
 
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
 
-                if (trimmedLine.startsWith("@startuml") || trimmedLine.startsWith("@enduml")) {
+                if (trimmedLine.startsWith(PLANTUML_START) || trimmedLine.startsWith(PLANTUML_END)) {
                     return Language.PLANTUML;
                 }
 
-                if (Pattern.matches("^flowchart\\s+(TB|TD|BT|RL|LR)\\s*$", trimmedLine) || Pattern.matches("^stateDiagram(-v2)?\\s*$", trimmedLine)) {
+                if (Pattern.matches(DiagramDetector.FLOWCHART_PATTERN, trimmedLine) || Pattern.matches(DiagramDetector.STATE_DIAGRAM_PATTERN, trimmedLine)) {
                     return Language.MERMAID;
                 }
             }

@@ -2,9 +2,6 @@ package model.elements;
 
 import enums.StateType;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class State {
 
     private String name;

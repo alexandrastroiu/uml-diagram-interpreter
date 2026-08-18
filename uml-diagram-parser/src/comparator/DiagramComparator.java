@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DiagramComparator {
 
-    public void comparePromptTypes(Language language, DiagramType type) {
+    public static void comparePromptTypes(Language language, DiagramType type) {
         switch (type){
             case ACTIVITY:
                 compareActivityDiagrams(language, type);
@@ -30,7 +30,7 @@ public class DiagramComparator {
         }
     }
 
-    public void compareStateDiagrams(Language language, DiagramType type) {
+    public static void compareStateDiagrams(Language language, DiagramType type) {
         FileReader fileReader = new FileReader();
 
         List<String> diagram1 = fileReader.readFileIntoList("data/diagrams/state-diagram/state_diagram_general.txt");
@@ -74,7 +74,7 @@ public class DiagramComparator {
         }
     }
 
-    public void compareActivityDiagrams(Language language, DiagramType type) {
+    public static void compareActivityDiagrams(Language language, DiagramType type) {
         FileReader fileReader = new FileReader();
 
         List<String> diagram1 = fileReader.readFileIntoList("data/diagrams/activity-diagram/activity_diagram_general.txt");
@@ -114,7 +114,7 @@ public class DiagramComparator {
         }
     }
 
-    public void compareUseCaseDiagrams(Language language, DiagramType type) {
+    public static void compareUseCaseDiagrams(Language language, DiagramType type) {
         FileReader fileReader = new FileReader();
 
         List<String> diagram1 = fileReader.readFileIntoList("data/diagrams/usecase-diagram/usecase_diagram_general.txt");

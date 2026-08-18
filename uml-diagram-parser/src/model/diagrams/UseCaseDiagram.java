@@ -2,10 +2,10 @@ package model.diagrams;
 
 import model.elements.UseCaseNode;
 import model.relationships.Link;
+import parser.plantuml.PlantUmlUseCaseParser;
 
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class UseCaseDiagram extends UmlDiagram {
 
@@ -142,21 +142,18 @@ public class UseCaseDiagram extends UmlDiagram {
         }
     }
 
-    public String getElementName(String name) {
+    public static String getElementName(String name) {
         return name.trim().replace("(", "").replace(")", "").replace(":", "").trim();
     }
 
-    public boolean isActor(String name) {
+    public static boolean isActor(String name) {
         String actorPattern = "(^:[\\s\\S]+:[\\s\\S]*$|^[^:]+$)";
-
 
         return Pattern.matches(actorPattern, name);
     }
 
-    public boolean isUseCase(String name) {
-        String actorPattern = "^\\([\\s\\S]+\\)[\\s\\S]*$";
-
-        return Pattern.matches(actorPattern, name);
+    public static boolean isUseCase(String name) {
+        return Pattern.matches(PlantUmlUseCaseParser.USE_CASE_PATTERN, name);
     }
 
     public boolean isMermaidElement(String name) {

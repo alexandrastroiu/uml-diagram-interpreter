@@ -13,34 +13,33 @@ import java.util.regex.Pattern;
 
 public class StateDiagramParser {
 
+    public static final String SPECIAL_STATE_PATTERN = "[*]";
+    private static final String STATE_PATTERN = "state ";
+    private static final String COLOR_PATTERN = " #";
+    private static final String COMPOSITE_PATTERN = "{";
+    private static final String ALIAS_PATTERN = "^state [\\s\\S]+ as [\\s\\S]+$";
+    private static final String ALIAS = " as ";
+    private static final String TRANSITION_PATTERN = "^[\\s\\S]+ -[a-zA-Z0-9,#\\[\\]]*-> [\\s\\S]+$";
+    private static final String START_PATTERN = "-";
+    private static final String END_PATTERN = "->";
+    private static final String DESCRIPTION_PATTERN = ":";
+    private static final String STATE_DESCRIPTION = "^[A-Za-z0-9\"]+\\s*:[A-Za-z0-9\"]+\\s*$";
+    private static final String STATE_ID_DEFINITION = "^[A-za-z0-9]+$";
+    private static final Map<String, StateType> STEREOTYPES = Map.ofEntries(
+            Map.entry("<<start>>", StateType.INITIAL),
+            Map.entry("<<end>>", StateType.FINAL),
+            Map.entry("<<choice>>", StateType.CHOICE),
+            Map.entry("<<fork>>", StateType.FORK),
+            Map.entry("<<join>>", StateType.JOIN)
+    );
+
     // Metoda pentru interpretarea diagramei de stare in limbajul PlantUML/Mermaid
 
-    public StateDiagram parseStateDiagram(List<String> lines, Language language, DiagramType type) {
+    public static StateDiagram parseStateDiagram(List<String> lines, Language language, DiagramType type) {
         StateDiagram stateDiagram = new StateDiagram();
         stateDiagram.setLanguage(language);
         stateDiagram.setType(type);
         stateDiagram.setLinesCount(lines.size());
-
-        Map<String, StateType> stereotypes = Map.ofEntries(
-                Map.entry("<<start>>", StateType.INITIAL),
-                Map.entry("<<end>>", StateType.FINAL),
-                Map.entry("<<choice>>", StateType.CHOICE),
-                Map.entry("<<fork>>", StateType.FORK),
-                Map.entry("<<join>>", StateType.JOIN)
-        );
-
-        String specialStatePattern = "[*]";
-        String statePattern = "state ";
-        String colorPattern = " #";
-        String compositePattern = "{";
-        String aliasPattern = "^state [\\s\\S]+ as [\\s\\S]+$";
-        String alias = " as ";
-        String transitionPattern = "^[\\s\\S]+ -[a-zA-Z0-9,#\\[\\]]*-> [\\s\\S]+$";
-        String startPattern = "-";
-        String endPattern = "->";
-        String descriptionPattern = ":";
-        String stateDescription = "^[A-Za-z0-9\"]+\\s*:[A-Za-z0-9\"]+\\s*$";
-        String stateIdDefinition = "^[A-za-z0-9]+$";
 
         for (String line : lines) {
             if (!line.isBlank()) {
@@ -48,36 +47,36 @@ public class StateDiagramParser {
 
                 // Identifica o stare
 
-                if (trimmedLine.startsWith(statePattern)) {
+                if (trimmedLine.startsWith(STATE_PATTERN)) {
                     State state = new State();
-                    int index1 = statePattern.length();
+                    int index1 = STATE_PATTERN.length();
                     String name = trimmedLine.substring(index1).trim();
                     String stateAlias = "";
 
-                    if (trimmedLine.endsWith(compositePattern)) {
-                        int index2 = name.indexOf(compositePattern);
+                    if (trimmedLine.endsWith(COMPOSITE_PATTERN)) {
+                        int index2 = name.indexOf(COMPOSITE_PATTERN);
                         name = name.substring(0, index2).trim();
 
                         state.setType(StateType.COMPOSITE);
                     }
 
-                    if (trimmedLine.contains(colorPattern)) {
-                        int index3 = name.indexOf(colorPattern);
+                    if (trimmedLine.contains(COLOR_PATTERN)) {
+                        int index3 = name.indexOf(COLOR_PATTERN);
                         name = name.substring(0, index3).trim();
                     }
 
-                    for (String key : stereotypes.keySet()) {
+                    for (String key : STEREOTYPES.keySet()) {
                         if (trimmedLine.contains(key)) {
                             int index4 = name.indexOf(key);
                             name = name.substring(0, index4).trim();
 
-                            state.setType(stereotypes.get(key));
+                            state.setType(STEREOTYPES.get(key));
                         }
                     }
 
-                    if (Pattern.matches(aliasPattern, trimmedLine)) {
-                        int index5 = name.indexOf(alias);
-                        int index6 = index5 + alias.length();
+                    if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
+                        int index5 = name.indexOf(ALIAS);
+                        int index6 = index5 + ALIAS.length();
 
                         stateAlias = name.substring(index6).replace("\"", "").trim();
                         name = name.substring(0, index5).trim();
@@ -87,9 +86,9 @@ public class StateDiagramParser {
                     state.setAlias(stateAlias);
                     stateDiagram.addState(state);
                 }
-                else if (Pattern.matches(stateDescription, trimmedLine)) {
+                else if (Pattern.matches(STATE_DESCRIPTION, trimmedLine)) {
                     State state = new State();
-                    int index = trimmedLine.indexOf(descriptionPattern);
+                    int index = trimmedLine.indexOf(DESCRIPTION_PATTERN);
                     String stateAlias = trimmedLine.substring(0, index).trim();
                     String name = trimmedLine.substring(index).trim();
 
@@ -99,7 +98,7 @@ public class StateDiagramParser {
                 }
 
                 if (language.equals(Language.MERMAID)) {
-                    if (Pattern.matches(stateIdDefinition, trimmedLine)) {
+                    if (Pattern.matches(STATE_ID_DEFINITION, trimmedLine)) {
                         State state = new State();
                         String name = trimmedLine.trim();
                         state.setName(name);
@@ -109,30 +108,30 @@ public class StateDiagramParser {
 
                 // Identifica o tranzitie
 
-                if (Pattern.matches(transitionPattern, trimmedLine)) {
+                if (Pattern.matches(TRANSITION_PATTERN, trimmedLine)) {
                     Transition transition = new Transition();
                     State startState = new State();
                     State endState = new State();
                     String name;
 
-                    if (trimmedLine.startsWith(specialStatePattern)) {
+                    if (trimmedLine.startsWith(SPECIAL_STATE_PATTERN)) {
                         startState.setName("Initial State");
                         startState.setType(StateType.INITIAL);
                     }
                     else {
-                        int indexStart = trimmedLine.indexOf(startPattern);
+                        int indexStart = trimmedLine.indexOf(START_PATTERN);
 
                         name = trimmedLine.substring(0, indexStart).replace("\"", "").trim();
                         startState.setName(name);
                     }
 
-                    int indexEnd = trimmedLine.indexOf(endPattern);
-                    int indexStateEnd = indexEnd + endPattern.length();
+                    int indexEnd = trimmedLine.indexOf(END_PATTERN);
+                    int indexStateEnd = indexEnd + END_PATTERN.length();
 
-                    if (trimmedLine.contains(descriptionPattern)) {
-                        int indexDescription = trimmedLine.indexOf(descriptionPattern);
+                    if (trimmedLine.contains(DESCRIPTION_PATTERN)) {
+                        int indexDescription = trimmedLine.indexOf(DESCRIPTION_PATTERN);
                         name = trimmedLine.substring(indexStateEnd, indexDescription).replace("\"", "").trim();
-                        String description = trimmedLine.substring(indexDescription + descriptionPattern.length()).trim();
+                        String description = trimmedLine.substring(indexDescription + DESCRIPTION_PATTERN.length()).trim();
 
                         transition.setTransitionDescription(description);
                     }
@@ -140,7 +139,7 @@ public class StateDiagramParser {
                         name = trimmedLine.substring(indexStateEnd).replace("\"", "").trim();
                     }
 
-                    if (name.endsWith(specialStatePattern.trim())) {
+                    if (name.endsWith(SPECIAL_STATE_PATTERN.trim())) {
                         endState.setName("Final State");
                         endState.setType(StateType.FINAL);
                     } else {

@@ -2,7 +2,6 @@ package model.diagrams;
 
 import enums.StateType;
 import model.elements.State;
-import model.elements.UseCaseNode;
 import model.relationships.Transition;
 
 import java.util.*;

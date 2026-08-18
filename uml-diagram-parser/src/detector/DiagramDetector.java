@@ -2,11 +2,20 @@ package detector;
 
 import enums.DiagramType;
 import enums.Language;
+import parser.plantuml.PlantUmlActivityParser;
+import parser.state_diagram.StateDiagramParser;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class DiagramDetector {
+
+    public static final String FLOWCHART_PATTERN = "^flowchart\\s+(TB|TD|BT|RL|LR)\\s*$";
+    public static final String STATE_DIAGRAM_PATTERN = "^stateDiagram(-v2)?\\s*$";
+    private static final String STATE = "^state\\s+\\S+.*$";
+    private static final String ACTIVITY = "^(#[A-Za-z]+|#[A-Za-z]+\\[A-Za-z]+|#[A-F]{6})?:[^;]+;\\s+$";
+    private static final String USECASE = "^.+\\([\\S\\s]+\\).+$";
+    private static final String USECASE_DIAGRAM_ELEMENT = "^(actor|usecase)\\s+\\S+.*$";
 
     // Default Constructor
 
@@ -14,22 +23,22 @@ public class DiagramDetector {
 
     // Metoda pentru a recunoaste tipul unei diagrame in limbajul PlantUML/Mermaid
 
-    public DiagramType detectDiagramType(List<String> lines, Language language) {
+    public static DiagramType detectDiagramType(List<String> lines, Language language) {
 
         if (language.equals(Language.PLANTUML)) {
             for (String line : lines) {
                 if (!line.isBlank()) {
                     String trimmedLine = line.trim();
 
-                    if (trimmedLine.contains("[*]") || Pattern.matches("^state\\s+\\S+.*$", trimmedLine)) {
+                    if (trimmedLine.contains(StateDiagramParser.SPECIAL_STATE_PATTERN) || Pattern.matches(STATE, trimmedLine)) {
                         return DiagramType.STATE;
                     }
 
-                    if (trimmedLine.equals("start") || trimmedLine.equals("stop") || trimmedLine.equals("end") || Pattern.matches("^(#[A-Za-z]+|#[A-Za-z]+\\[A-Za-z]+|#[A-F]{6})?:[^;]+;\\s+$", trimmedLine)) {
+                    if (trimmedLine.equals(PlantUmlActivityParser.START_PATTERN) || trimmedLine.equals(PlantUmlActivityParser.END_PATTERN.get(0)) || trimmedLine.equals(PlantUmlActivityParser.END_PATTERN.get(1)) || Pattern.matches(ACTIVITY, trimmedLine)) {
                         return DiagramType.ACTIVITY;
                     }
 
-                    if (Pattern.matches("^(actor|usecase)\\s+\\S+.*$", trimmedLine) || Pattern.matches("^.+\\([\\S\\s]+\\).+$", trimmedLine)) {
+                    if (Pattern.matches(USECASE_DIAGRAM_ELEMENT, trimmedLine) || Pattern.matches(USECASE, trimmedLine)) {
                         return DiagramType.USECASE;
                     }
                 }
@@ -40,9 +49,9 @@ public class DiagramDetector {
             for (String line : lines) {
                 if (!line.isBlank()) {
                     String trimmedLine = line.trim();
-                    if (Pattern.matches("^flowchart\\s+(TB|TD|BT|RL|LR)\\s*$", trimmedLine)) {
+                    if (Pattern.matches(FLOWCHART_PATTERN, trimmedLine)) {
                         return DiagramType.FLOWCHART;
-                    } else if (Pattern.matches("^stateDiagram(-v2)?\\s*$", trimmedLine)) {
+                    } else if (Pattern.matches(STATE_DIAGRAM_PATTERN, trimmedLine)) {
                         return DiagramType.STATE;
                     }
                 }
@@ -53,5 +62,4 @@ public class DiagramDetector {
 
         return DiagramType.UNKOWN;
     }
-
 }

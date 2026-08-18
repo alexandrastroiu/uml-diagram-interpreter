@@ -57,16 +57,16 @@ public class Link {
     }
 
     public UseCaseNode getElement(UseCaseDiagram useCaseDiagram, String elementName) {
-        String name = useCaseDiagram.getElementName(elementName);
+        String name = UseCaseDiagram.getElementName(elementName);
 
-        if (useCaseDiagram.isUseCase(elementName) || useCaseDiagram.useCaseExists(name)) {
+        if (UseCaseDiagram.isUseCase(elementName) || useCaseDiagram.useCaseExists(name)) {
             if (!useCaseDiagram.useCaseExists(name)) {
                 UseCaseNode useCase = new UseCaseNode(name, NodeType.USECASE);
                 useCaseDiagram.addUseCaseNode(useCase, useCaseDiagram.getUseCaseLookup());
             }
             return useCaseDiagram.getUseCaseLookup().get(name);
         }
-        else if (useCaseDiagram.isActor(elementName) || useCaseDiagram.actorExists(name)) {
+        else if (UseCaseDiagram.isActor(elementName) || useCaseDiagram.actorExists(name)) {
             if (!useCaseDiagram.actorExists(name)) {
                 UseCaseNode actor = new UseCaseNode(name, NodeType.ACTOR);
                 useCaseDiagram.addUseCaseNode(actor, useCaseDiagram.getActorLookup());
