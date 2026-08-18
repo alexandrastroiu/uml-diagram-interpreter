@@ -45,7 +45,10 @@ public class MermaidActivityParser {
                 }
 
                 if (Pattern.matches(CONDITIONAL_PATTERN, trimmedLine)) {
-                    ActivityNode conditionalNode = new ActivityNode("Condition", ActivityNodeType.CONDITIONAL);
+                    int indexStart = trimmedLine.indexOf("{");
+                    int indexEnd = trimmedLine.indexOf("}");
+                    String condition = trimmedLine.substring(indexStart + 1, indexEnd).replace("?", "").trim();
+                    ActivityNode conditionalNode = new ActivityNode(condition, ActivityNodeType.CONDITIONAL);
                     activityDiagram.addActivity(conditionalNode);
                 }
 

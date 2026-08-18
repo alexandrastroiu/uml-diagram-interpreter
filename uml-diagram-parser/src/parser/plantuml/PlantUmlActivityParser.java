@@ -53,17 +53,20 @@ public class PlantUmlActivityParser {
                 }
 
                 if (Pattern.matches(FORK_PATTERN, trimmedLine)) {
-                    ActivityNode forkNode = new ActivityNode("Fork", ActivityNodeType.FORK, currentSwimlane.toString(), currentGroup.toString());
+                    activityDiagram.setForkCount(activityDiagram.getForkCount() + 1);
+                    ActivityNode forkNode = new ActivityNode("Fork" + activityDiagram.getForkCount(), ActivityNodeType.FORK, currentSwimlane.toString(), currentGroup.toString());
                     activityDiagram.addActivity(forkNode);
                 }
 
                 if (Pattern.matches(SWITCH_PATTERN, trimmedLine) || Pattern.matches(CONDITIONAL_PATTERN, trimmedLine)) {
-                    ActivityNode conditionalNode = new ActivityNode("Condition", ActivityNodeType.CONDITIONAL, currentSwimlane.toString(), currentGroup.toString());
+                    String condition = getCondition(trimmedLine);
+                    ActivityNode conditionalNode = new ActivityNode(condition, ActivityNodeType.CONDITIONAL, currentSwimlane.toString(), currentGroup.toString());
                     activityDiagram.addActivity(conditionalNode);
                 }
 
                 if (Pattern.matches(MERGE_PATTERN, trimmedLine)) {
-                    ActivityNode mergeNode = new ActivityNode("Merge", ActivityNodeType.MERGE, currentSwimlane.toString(), currentGroup.toString());
+                    activityDiagram.setMergeCount(activityDiagram.getMergeCount() + 1);
+                    ActivityNode mergeNode = new ActivityNode("Merge" + activityDiagram.getMergeCount(), ActivityNodeType.MERGE, currentSwimlane.toString(), currentGroup.toString());
                     activityDiagram.addActivity(mergeNode);
                 }
 
@@ -116,9 +119,24 @@ public class PlantUmlActivityParser {
         activityDiagram.setActivitiesCount(activityDiagram.getElements());
         activityDiagram.setSwimlanesCount(activityDiagram.getSwimlanes().size());
         activityDiagram.setConditionalNodes(activityDiagram.countNodes(ActivityNodeType.CONDITIONAL));
-        activityDiagram.setForkCount(activityDiagram.countNodes(ActivityNodeType.FORK));
-        activityDiagram.setMergeCount(activityDiagram.countNodes(ActivityNodeType.MERGE));
 
         return activityDiagram;
+    }
+
+    private static String getCondition(String line) {
+        String condition = "";
+        int indexStart;
+
+        if (Pattern.matches(SWITCH_PATTERN, line)) {
+            indexStart = line.indexOf("(");
+            condition = line.substring(indexStart + 1).trim();
+        }
+        else if (Pattern.matches(CONDITIONAL_PATTERN, line)) {
+            indexStart = line.contains("if") ? line.indexOf("if") + "if".length() : line.indexOf("elseif") + "elseif".length();
+            int indexEnd = line.indexOf("then");
+            condition = line.substring(indexStart, indexEnd).replace("?", "").replace("(", "").replace(")", "").trim();
+        }
+
+        return condition;
     }
 }
