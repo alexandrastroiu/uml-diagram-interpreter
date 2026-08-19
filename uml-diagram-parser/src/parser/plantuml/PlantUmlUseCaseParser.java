@@ -41,71 +41,13 @@ public class PlantUmlUseCaseParser {
 
                 // Identifica un caz de utilizare
 
-                if (Pattern.matches(USE_CASE_DEFINITION, trimmedLine)) {
-                    int nameStart = USECASE.length();
-                    int nameEnd = trimmedLine.length();
-                    int aliasStart = trimmedLine.length();
-
-                    if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
-                        nameEnd = trimmedLine.indexOf(ALIAS);
-                        aliasStart = nameEnd + ALIAS.length();
-                    }
-
-                    String useCaseName = trimmedLine.substring(nameStart, nameEnd).replace("\"", "").trim();
-                    String useCaseAlias = trimmedLine.substring(aliasStart);
-                    UseCaseNode newUseCase = new UseCaseNode(useCaseName, useCaseAlias, NodeType.USECASE);
-                    useCaseDiagram.addUseCaseNode(newUseCase, useCaseDiagram.getUseCaseLookup());
-                }
-
-                if (Pattern.matches(USE_CASE_PATTERN, trimmedLine)) {
-                    int nameStart = trimmedLine.indexOf("(");
-                    int nameEnd = trimmedLine.length();
-                    int aliasStart = trimmedLine.length();
-
-                    if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
-                        nameEnd = trimmedLine.indexOf(ALIAS);
-                        aliasStart = nameEnd + ALIAS.length();
-                    }
-
-                    String useCaseName = trimmedLine.substring(nameStart, nameEnd).replace("(", "").replace(")", ""). trim();
-                    String useCaseAlias = trimmedLine.substring(aliasStart);
-                    UseCaseNode newUseCase = new UseCaseNode(useCaseName, useCaseAlias, NodeType.USECASE);
-                    useCaseDiagram.addUseCaseNode(newUseCase, useCaseDiagram.getUseCaseLookup());
-                }
+                checkUseCaseDefinition(useCaseDiagram, trimmedLine);
+                checkUseCase(useCaseDiagram, trimmedLine);
 
                 // Identifica un actor
 
-                if (Pattern.matches(ACTOR_DEFINITION, trimmedLine)) {
-                    int nameStart = ACTOR.length();
-                    int nameEnd = trimmedLine.length();
-                    int aliasStart = trimmedLine.length();
-
-                    if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
-                        nameEnd = trimmedLine.indexOf(ALIAS);
-                        aliasStart = nameEnd + ALIAS.length();
-                    }
-
-                    String actorName = trimmedLine.substring(nameStart, nameEnd).replace("\"", "").trim();
-                    String actorAlias = trimmedLine.substring(aliasStart);
-                    UseCaseNode newActor = new UseCaseNode(actorName, actorAlias, NodeType.ACTOR);
-                    useCaseDiagram.addUseCaseNode(newActor, useCaseDiagram.getActorLookup());
-                }
-
-                if (Pattern.matches(ACTOR_PATTERN, trimmedLine)) {
-                    int nameStart = trimmedLine.indexOf(":");
-                    int nameEnd = trimmedLine.length();
-                    int aliasStart = trimmedLine.length();
-
-                    if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
-                        nameEnd = trimmedLine.indexOf(ALIAS);
-                        aliasStart = nameEnd + ALIAS.length();
-                    }
-
-                    String actorName = trimmedLine.substring(nameStart, nameEnd).replace(":", ""). trim();
-                    String actorAlias = trimmedLine.substring(aliasStart);
-                    UseCaseNode newActor = new UseCaseNode(actorName, actorAlias, NodeType.USECASE);
-                    useCaseDiagram.addUseCaseNode(newActor, useCaseDiagram.getActorLookup());
-                }
+                checkActorDefinition(useCaseDiagram, trimmedLine);
+                checkActor(useCaseDiagram, trimmedLine);
             }
         }
 
@@ -115,47 +57,10 @@ public class PlantUmlUseCaseParser {
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
 
-                if (Pattern.matches(LINK_PATTERN, trimmedLine)) {
-                    int linkStart = trimmedLine.indexOf(" -");
-                    int linkEnd = trimmedLine.indexOf("> ");
-                    String element1 = trimmedLine.substring(0, linkStart).trim();
-                    String element2 = trimmedLine.substring(linkEnd + 1).trim();
-                    Link link = new Link(LinkType.LINK);
-                    link.addLinkElements(useCaseDiagram, element1, element2);
-                    useCaseDiagram.getLinks().add(link);
-                }
-
-                if (Pattern.matches(EXTEND_PATTERN, trimmedLine)) {
-                    int linkStart = trimmedLine.indexOf(" .");
-                    int linkEnd = trimmedLine.indexOf("> ");
-                    int index = trimmedLine.indexOf("<<extend>>");
-                    String element1 = trimmedLine.substring(0, linkStart).trim();
-                    String element2 = trimmedLine.substring(linkEnd + 1, index).trim();
-                    Link link = new Link(LinkType.EXTEND);
-                    link.addLinkElements(useCaseDiagram, element1, element2);
-                    useCaseDiagram.getLinks().add(link);
-                }
-
-                if (Pattern.matches(INCLUDE_PATTERN, trimmedLine)) {
-                    int linkStart = trimmedLine.indexOf(" .");
-                    int linkEnd = trimmedLine.indexOf("> ");
-                    int index = trimmedLine.indexOf("<<include>>");
-                    String element1 = trimmedLine.substring(0, linkStart).trim();
-                    String element2 = trimmedLine.substring(linkEnd + 1, index).trim();
-                    Link link = new Link(LinkType.INCLUDE);
-                    link.addLinkElements(useCaseDiagram, element1, element2);
-                    useCaseDiagram.getLinks().add(link);
-                }
-
-                if (Pattern.matches(EXTENSION_PATTERN, trimmedLine)) {
-                    int linkStart = trimmedLine.indexOf(" <");
-                    int linkEnd = trimmedLine.indexOf("- ");
-                    String element1 = trimmedLine.substring(0, linkStart).trim();
-                    String element2 = trimmedLine.substring(linkEnd + 1).trim();
-                    Link link = new Link(LinkType.EXTENSION);
-                    link.addLinkElements(useCaseDiagram, element1, element2);
-                    useCaseDiagram.getLinks().add(link);
-                }
+                checkLink(useCaseDiagram, trimmedLine);
+                checkExtend(useCaseDiagram, trimmedLine);
+                checkInclude(useCaseDiagram, trimmedLine);
+                checkExtension(useCaseDiagram, trimmedLine);
             }
         }
 
@@ -167,5 +72,143 @@ public class PlantUmlUseCaseParser {
         useCaseDiagram.setLinksCount(useCaseDiagram.getLinks().size());
 
         return useCaseDiagram;
+    }
+
+    private static boolean isLink(String line) {
+        return Pattern.matches(LINK_PATTERN, line);
+    }
+
+    private static boolean isInclude(String line) {
+        return Pattern.matches(INCLUDE_PATTERN, line);
+    }
+
+    private static boolean isExtend(String line) {
+        return Pattern.matches(EXTEND_PATTERN, line);
+    }
+
+    private static boolean isExtension(String line) {
+        return Pattern.matches(EXTENSION_PATTERN, line);
+    }
+
+    private static void checkLink(UseCaseDiagram useCaseDiagram, String trimmedLine) {
+        if (isLink(trimmedLine)) {
+            int linkStart = trimmedLine.indexOf(" -");
+            int linkEnd = trimmedLine.indexOf("> ");
+            String element1 = trimmedLine.substring(0, linkStart).trim();
+            String element2 = trimmedLine.substring(linkEnd + 1).trim();
+            Link link = new Link(LinkType.LINK);
+            link.addLinkElements(useCaseDiagram, element1, element2);
+            useCaseDiagram.getLinks().add(link);
+        }
+    }
+
+    private static void checkExtend(UseCaseDiagram useCaseDiagram, String trimmedLine) {
+        if (isExtend(trimmedLine)) {
+            int linkStart = trimmedLine.indexOf(" .");
+            int linkEnd = trimmedLine.indexOf("> ");
+            int index = trimmedLine.indexOf("<<extend>>");
+            String element1 = trimmedLine.substring(0, linkStart).trim();
+            String element2 = trimmedLine.substring(linkEnd + 1, index).trim();
+            Link link = new Link(LinkType.EXTEND);
+            link.addLinkElements(useCaseDiagram, element1, element2);
+            useCaseDiagram.getLinks().add(link);
+        }
+    }
+
+    private static void checkInclude(UseCaseDiagram useCaseDiagram, String trimmedLine) {
+        if (isInclude(trimmedLine)) {
+            int linkStart = trimmedLine.indexOf(" .");
+            int linkEnd = trimmedLine.indexOf("> ");
+            int index = trimmedLine.indexOf("<<include>>");
+            String element1 = trimmedLine.substring(0, linkStart).trim();
+            String element2 = trimmedLine.substring(linkEnd + 1, index).trim();
+            Link link = new Link(LinkType.INCLUDE);
+            link.addLinkElements(useCaseDiagram, element1, element2);
+            useCaseDiagram.getLinks().add(link);
+        }
+    }
+
+    private static void checkExtension(UseCaseDiagram useCaseDiagram, String trimmedLine) {
+        if (isExtension(trimmedLine)) {
+            int linkStart = trimmedLine.indexOf(" <");
+            int linkEnd = trimmedLine.indexOf("- ");
+            String element1 = trimmedLine.substring(0, linkStart).trim();
+            String element2 = trimmedLine.substring(linkEnd + 1).trim();
+            Link link = new Link(LinkType.EXTENSION);
+            link.addLinkElements(useCaseDiagram, element1, element2);
+            useCaseDiagram.getLinks().add(link);
+        }
+    }
+
+    private static void checkUseCaseDefinition(UseCaseDiagram useCaseDiagram, String trimmedLine) {
+        if (Pattern.matches(USE_CASE_DEFINITION, trimmedLine)) {
+            int nameStart = USECASE.length();
+            int nameEnd = trimmedLine.length();
+            int aliasStart = trimmedLine.length();
+
+            if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
+                nameEnd = trimmedLine.indexOf(ALIAS);
+                aliasStart = nameEnd + ALIAS.length();
+            }
+
+            String useCaseName = trimmedLine.substring(nameStart, nameEnd).replace("\"", "").trim();
+            String useCaseAlias = trimmedLine.substring(aliasStart);
+            UseCaseNode newUseCase = new UseCaseNode(useCaseName, useCaseAlias, NodeType.USECASE);
+            useCaseDiagram.addUseCaseNode(newUseCase, useCaseDiagram.getUseCaseLookup());
+        }
+    }
+
+    private static void checkUseCase(UseCaseDiagram useCaseDiagram, String trimmedLine) {
+        if (Pattern.matches(USE_CASE_PATTERN, trimmedLine)) {
+            int nameStart = trimmedLine.indexOf("(");
+            int nameEnd = trimmedLine.length();
+            int aliasStart = trimmedLine.length();
+
+            if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
+                nameEnd = trimmedLine.indexOf(ALIAS);
+                aliasStart = nameEnd + ALIAS.length();
+            }
+
+            String useCaseName = trimmedLine.substring(nameStart, nameEnd).replace("(", "").replace(")", ""). trim();
+            String useCaseAlias = trimmedLine.substring(aliasStart);
+            UseCaseNode newUseCase = new UseCaseNode(useCaseName, useCaseAlias, NodeType.USECASE);
+            useCaseDiagram.addUseCaseNode(newUseCase, useCaseDiagram.getUseCaseLookup());
+        }
+    }
+
+    private static void checkActorDefinition(UseCaseDiagram useCaseDiagram, String trimmedLine) {
+        if (Pattern.matches(ACTOR_DEFINITION, trimmedLine)) {
+            int nameStart = ACTOR.length();
+            int nameEnd = trimmedLine.length();
+            int aliasStart = trimmedLine.length();
+
+            if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
+                nameEnd = trimmedLine.indexOf(ALIAS);
+                aliasStart = nameEnd + ALIAS.length();
+            }
+
+            String actorName = trimmedLine.substring(nameStart, nameEnd).replace("\"", "").trim();
+            String actorAlias = trimmedLine.substring(aliasStart);
+            UseCaseNode newActor = new UseCaseNode(actorName, actorAlias, NodeType.ACTOR);
+            useCaseDiagram.addUseCaseNode(newActor, useCaseDiagram.getActorLookup());
+        }
+    }
+
+    private static void checkActor(UseCaseDiagram useCaseDiagram, String trimmedLine) {
+        if (Pattern.matches(ACTOR_PATTERN, trimmedLine)) {
+            int nameStart = trimmedLine.indexOf(":");
+            int nameEnd = trimmedLine.length();
+            int aliasStart = trimmedLine.length();
+
+            if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
+                nameEnd = trimmedLine.indexOf(ALIAS);
+                aliasStart = nameEnd + ALIAS.length();
+            }
+
+            String actorName = trimmedLine.substring(nameStart, nameEnd).replace(":", ""). trim();
+            String actorAlias = trimmedLine.substring(aliasStart);
+            UseCaseNode newActor = new UseCaseNode(actorName, actorAlias, NodeType.USECASE);
+            useCaseDiagram.addUseCaseNode(newActor, useCaseDiagram.getActorLookup());
+        }
     }
 }

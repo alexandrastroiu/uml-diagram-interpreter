@@ -124,13 +124,13 @@ public class UseCaseDiagram extends UmlDiagram {
         if (map.containsKey(name)) {
             UseCaseNode value = map.get(name);
             value.updateUseCaseNode(node);
-            if (!alias.isEmpty()) {
+            if (alias != null && !alias.isEmpty()) {
                 map.put(alias, node);
             }
         }
         else {
             map.put(name, node);
-            if (!alias.isEmpty()) {
+            if (alias != null && !alias.isEmpty()) {
                 map.put(alias, node);
             }
         }
@@ -178,5 +178,9 @@ public class UseCaseDiagram extends UmlDiagram {
 
     public void printLinks() {
         links.forEach(link -> System.out.println(link.getStart().getName() + " -> " + link.getEnd().getName() + " - " + link.getType()));
+    }
+
+    public void printAllElements() {
+        diagramElements.forEach(element -> System.out.println(element.getName()));
     }
 }

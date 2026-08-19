@@ -29,6 +29,6 @@ public class MermaidParser implements DiagramParser {
     }
 
     public static String getMermaidElementName(String name) {
-        return name.replace("(", "").replace(")", "").replace("[", "").replace("]", "").replace("\"", "").trim();
+        return name.replace("(", "").replace(")", "").replace("[", "").replace("]", "").replace("\"", "").replace("/", "").replace("\\", "").replace("-", "").replace("|", "").trim();
     }
 }

@@ -150,4 +150,8 @@ public class StateDiagram extends UmlDiagram {
     public void printTransitions() {
         transitions.forEach(transition-> System.out.println(transition.getStartState().getName() + " --> " + transition.getEndState().getName()));
     }
+
+    public void printConditions() {
+        states.stream().filter(state -> state.getType().equals(StateType.CHOICE)).forEach(condition -> System.out.println(condition.getName()));
+    }
 }

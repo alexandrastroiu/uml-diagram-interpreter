@@ -47,110 +47,12 @@ public class StateDiagramParser {
 
                 // Identifica o stare
 
-                if (trimmedLine.startsWith(STATE_PATTERN)) {
-                    State state = new State();
-                    int index1 = STATE_PATTERN.length();
-                    String name = trimmedLine.substring(index1).trim();
-                    String stateAlias = "";
-
-                    if (trimmedLine.endsWith(COMPOSITE_PATTERN)) {
-                        int index2 = name.indexOf(COMPOSITE_PATTERN);
-                        name = name.substring(0, index2).trim();
-
-                        state.setType(StateType.COMPOSITE);
-                    }
-
-                    if (trimmedLine.contains(COLOR_PATTERN)) {
-                        int index3 = name.indexOf(COLOR_PATTERN);
-                        name = name.substring(0, index3).trim();
-                    }
-
-                    for (String key : STEREOTYPES.keySet()) {
-                        if (trimmedLine.contains(key)) {
-                            int index4 = name.indexOf(key);
-                            name = name.substring(0, index4).trim();
-
-                            state.setType(STEREOTYPES.get(key));
-                        }
-                    }
-
-                    if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
-                        int index5 = name.indexOf(ALIAS);
-                        int index6 = index5 + ALIAS.length();
-
-                        stateAlias = name.substring(index6).replace("\"", "").trim();
-                        name = name.substring(0, index5).trim();
-                    }
-
-                    state.setName(name);
-                    state.setAlias(stateAlias);
-                    stateDiagram.addState(state);
-                }
-                else if (Pattern.matches(STATE_DESCRIPTION, trimmedLine)) {
-                    State state = new State();
-                    int index = trimmedLine.indexOf(DESCRIPTION_PATTERN);
-                    String stateAlias = trimmedLine.substring(0, index).trim();
-                    String name = trimmedLine.substring(index).trim();
-
-                    state.setName(name);
-                    state.setAlias(stateAlias);
-                    stateDiagram.addState(state);
-                }
-
-                if (language.equals(Language.MERMAID)) {
-                    if (Pattern.matches(STATE_ID_DEFINITION, trimmedLine)) {
-                        State state = new State();
-                        String name = trimmedLine.trim();
-                        state.setName(name);
-                        stateDiagram.addState(state);
-                    }
-                }
+                checkState(stateDiagram, trimmedLine);
+                checkMermaidState(stateDiagram, trimmedLine, language);
 
                 // Identifica o tranzitie
 
-                if (Pattern.matches(TRANSITION_PATTERN, trimmedLine)) {
-                    Transition transition = new Transition();
-                    State startState = new State();
-                    State endState = new State();
-                    String name;
-
-                    if (trimmedLine.startsWith(SPECIAL_STATE_PATTERN)) {
-                        startState.setName("Initial State");
-                        startState.setType(StateType.INITIAL);
-                    }
-                    else {
-                        int indexStart = trimmedLine.indexOf(START_PATTERN);
-
-                        name = trimmedLine.substring(0, indexStart).replace("\"", "").trim();
-                        startState.setName(name);
-                    }
-
-                    int indexEnd = trimmedLine.indexOf(END_PATTERN);
-                    int indexStateEnd = indexEnd + END_PATTERN.length();
-
-                    if (trimmedLine.contains(DESCRIPTION_PATTERN)) {
-                        int indexDescription = trimmedLine.indexOf(DESCRIPTION_PATTERN);
-                        name = trimmedLine.substring(indexStateEnd, indexDescription).replace("\"", "").trim();
-                        String description = trimmedLine.substring(indexDescription + DESCRIPTION_PATTERN.length()).trim();
-
-                        transition.setTransitionDescription(description);
-                    }
-                    else {
-                        name = trimmedLine.substring(indexStateEnd).replace("\"", "").trim();
-                    }
-
-                    if (name.endsWith(SPECIAL_STATE_PATTERN.trim())) {
-                        endState.setName("Final State");
-                        endState.setType(StateType.FINAL);
-                    } else {
-                        endState.setName(name);
-                    }
-
-                    transition.addTransitionStates(stateDiagram, startState, endState);
-                    stateDiagram.addState(startState);
-                    stateDiagram.addState(endState);
-                    stateDiagram.getTransitions().add(transition);
-                }
+                checkTransition(stateDiagram, trimmedLine);
             }
         }
 
@@ -164,5 +66,122 @@ public class StateDiagramParser {
         stateDiagram.setElements(stateDiagram.countElements());
 
         return stateDiagram;
+    }
+
+    private static boolean isTransition(String line) {
+        return Pattern.matches(TRANSITION_PATTERN, line);
+    }
+
+    private static boolean isState(String line) {
+        return line.startsWith(STATE_PATTERN);
+    }
+
+    private static void checkState(StateDiagram stateDiagram, String trimmedLine) {
+        if (isState(trimmedLine)) {
+            State state = new State();
+            int index1 = STATE_PATTERN.length();
+            String name = trimmedLine.substring(index1).trim();
+            String stateAlias = "";
+
+            if (trimmedLine.endsWith(COMPOSITE_PATTERN)) {
+                int index2 = name.indexOf(COMPOSITE_PATTERN);
+                name = name.substring(0, index2).trim();
+
+                state.setType(StateType.COMPOSITE);
+            }
+
+            if (trimmedLine.contains(COLOR_PATTERN)) {
+                int index3 = name.indexOf(COLOR_PATTERN);
+                name = name.substring(0, index3).trim();
+            }
+
+            for (String key : STEREOTYPES.keySet()) {
+                if (trimmedLine.contains(key)) {
+                    int index4 = name.indexOf(key);
+                    name = name.substring(0, index4).trim();
+
+                    state.setType(STEREOTYPES.get(key));
+                }
+            }
+
+            if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
+                int index5 = name.indexOf(ALIAS);
+                int index6 = index5 + ALIAS.length();
+
+                stateAlias = name.substring(index6).replace("\"", "").trim();
+                name = name.substring(0, index5).trim();
+            }
+
+            state.setName(name);
+            state.setAlias(stateAlias);
+            stateDiagram.addState(state);
+        }
+        else if (Pattern.matches(STATE_DESCRIPTION, trimmedLine)) {
+            State state = new State();
+            int index = trimmedLine.indexOf(DESCRIPTION_PATTERN);
+            String stateAlias = trimmedLine.substring(0, index).trim();
+            String name = trimmedLine.substring(index).trim();
+
+            state.setName(name);
+            state.setAlias(stateAlias);
+            stateDiagram.addState(state);
+        }
+    }
+
+    private static void checkMermaidState(StateDiagram stateDiagram, String trimmedLine, Language language) {
+        if (language.equals(Language.MERMAID)) {
+            if (Pattern.matches(STATE_ID_DEFINITION, trimmedLine)) {
+                State state = new State();
+                String name = trimmedLine.trim();
+                state.setName(name);
+                stateDiagram.addState(state);
+            }
+        }
+    }
+
+    private static void checkTransition(StateDiagram stateDiagram, String trimmedLine) {
+        if (isTransition(trimmedLine)) {
+            Transition transition = new Transition();
+            State startState = new State();
+            State endState = new State();
+            String name;
+
+            if (trimmedLine.startsWith(SPECIAL_STATE_PATTERN)) {
+                startState.setName("Initial State");
+                startState.setType(StateType.INITIAL);
+            }
+            else {
+                int indexStart = trimmedLine.indexOf(START_PATTERN);
+
+                name = trimmedLine.substring(0, indexStart).replace("\"", "").trim();
+                startState.setName(name);
+            }
+
+            int indexEnd = trimmedLine.indexOf(END_PATTERN);
+            int indexStateEnd = indexEnd + END_PATTERN.length();
+
+            if (trimmedLine.contains(DESCRIPTION_PATTERN)) {
+                int indexDescription = trimmedLine.indexOf(DESCRIPTION_PATTERN);
+                name = trimmedLine.substring(indexStateEnd, indexDescription).replace("\"", "").trim();
+                String description = trimmedLine.substring(indexDescription + DESCRIPTION_PATTERN.length()).trim();
+
+                transition.setTransitionDescription(description);
+            }
+            else {
+                name = trimmedLine.substring(indexStateEnd).replace("\"", "").trim();
+            }
+
+            if (name.endsWith(SPECIAL_STATE_PATTERN.trim())) {
+                endState.setName("Final State");
+                endState.setType(StateType.FINAL);
+            } else {
+                endState.setName(name);
+            }
+
+            transition.addTransitionStates(stateDiagram, startState, endState);
+            stateDiagram.addState(startState);
+            stateDiagram.addState(endState);
+            stateDiagram.getTransitions().add(transition);
+        }
     }
 }
