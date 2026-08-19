@@ -15,7 +15,6 @@ public class ActivityDiagram extends UmlDiagram {
     private LinkedHashSet<ControlFlow> controlFlows;
     private int activitiesCount;
     private int swimlanesCount;
-    private int loops;
     private int forkCount;
     private int mergeCount;
     private int conditionalNodes;
@@ -31,7 +30,6 @@ public class ActivityDiagram extends UmlDiagram {
         controlFlows = new LinkedHashSet<>();
         activitiesCount = 0;
         swimlanesCount = 0;
-        loops = 0;
         forkCount = 0;
         mergeCount = 0;
         conditionalNodes = 0;
@@ -77,14 +75,6 @@ public class ActivityDiagram extends UmlDiagram {
 
     public void setControlFlows(LinkedHashSet<ControlFlow> controlFlows) {
         this.controlFlows = controlFlows;
-    }
-
-    public int getLoops() {
-        return loops;
-    }
-
-    public void setLoops(int loops) {
-        this.loops = loops;
     }
 
     public LinkedHashSet<String> getGroups() {
@@ -138,14 +128,34 @@ public class ActivityDiagram extends UmlDiagram {
     }
 
     public void addActivity(ActivityNode activityNode) {
-        getActivities().add(activityNode);
-        if (!activityLookup.containsKey(activityNode.getName())) {
-            activityLookup.put(activityNode.getName(), activityNode);
+        HashMap<String, ActivityNode> activityNodes = getActivityLookup();
+        String name = activityNode.getName();
+        String alias = activityNode.getAlias();
+
+        if (!activityNodes.containsKey(name)) {
+            activityNodes.put(name, activityNode);
+            if (alias != null && !alias.isEmpty()) {
+                activityNodes.put(alias,activityNode);
+            }
+        }
+    }
+
+    public ActivityNode findActivity(String key) {
+        return activityLookup.get(key);
+    }
+
+    public void addAllActivities(LinkedHashMap<String, ActivityNode> map) {
+        if (!map.isEmpty()) {
+            activities.addAll(map.values());
         }
     }
 
     public void printActivities() {
-        this.activities.stream().filter(activity -> !activity.getType().equals(ActivityNodeType.FORK) && !activity.getType().equals(ActivityNodeType.MERGE) && !activity.getType().equals(ActivityNodeType.CONDITIONAL)).forEach(activity -> System.out.println(activity.getName() + " - " + activity.getType()));
+        this.activities.stream().filter(activity -> !activity.getType().equals(ActivityNodeType.FORK) && !activity.getType().equals(ActivityNodeType.MERGE) && !activity.getType().equals(ActivityNodeType.CONDITIONAL)).forEach(activity -> System.out.println(activity.getName()));
+    }
+
+    public void printConditions() {
+        this.activities.stream().filter(condition -> condition.getType().equals(ActivityNodeType.CONDITIONAL)).forEach(condition -> System.out.println(condition.getName()));
     }
 
     public void printSwimlanes() {

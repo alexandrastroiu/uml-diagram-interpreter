@@ -9,6 +9,14 @@ public class ControlFlow {
     private ActivityNode end;
     private FlowType type;
 
+    // Constructor
+
+    public ControlFlow() {
+        this.start = null;
+        this.end = null;
+        this.type = FlowType.FLOW;
+    }
+
     //  Getters, Setters
 
     public ActivityNode getStart() {

@@ -42,37 +42,15 @@ public class PlantUmlActivityParser {
             if (!line.isBlank()) {
                 String trimmedLine = line.trim();
 
-                if (trimmedLine.equals(START_PATTERN)) {
-                    ActivityNode startNode = new ActivityNode("Start", ActivityNodeType.START, currentSwimlane.toString(), currentGroup.toString());
-                    activityDiagram.addActivity(startNode);
-                }
-
-                if (trimmedLine.equals(END_PATTERN.get(0)) || trimmedLine.equals(END_PATTERN.get(1))) {
-                    ActivityNode endNode = new ActivityNode("Stop", ActivityNodeType.STOP, currentSwimlane.toString(), currentGroup.toString());
-                    activityDiagram.addActivity(endNode);
-                }
-
-                if (Pattern.matches(FORK_PATTERN, trimmedLine)) {
-                    activityDiagram.setForkCount(activityDiagram.getForkCount() + 1);
-                    ActivityNode forkNode = new ActivityNode("Fork" + activityDiagram.getForkCount(), ActivityNodeType.FORK, currentSwimlane.toString(), currentGroup.toString());
-                    activityDiagram.addActivity(forkNode);
-                }
-
-                if (Pattern.matches(SWITCH_PATTERN, trimmedLine) || Pattern.matches(CONDITIONAL_PATTERN, trimmedLine)) {
-                    String condition = getCondition(trimmedLine);
-                    ActivityNode conditionalNode = new ActivityNode(condition, ActivityNodeType.CONDITIONAL, currentSwimlane.toString(), currentGroup.toString());
-                    activityDiagram.addActivity(conditionalNode);
-                }
-
-                if (Pattern.matches(MERGE_PATTERN, trimmedLine)) {
-                    activityDiagram.setMergeCount(activityDiagram.getMergeCount() + 1);
-                    ActivityNode mergeNode = new ActivityNode("Merge" + activityDiagram.getMergeCount(), ActivityNodeType.MERGE, currentSwimlane.toString(), currentGroup.toString());
-                    activityDiagram.addActivity(mergeNode);
-                }
+                checkStart(activityDiagram, trimmedLine, currentSwimlane, currentGroup);
+                checkEnd(activityDiagram, trimmedLine, currentSwimlane, currentGroup);
+                checkFork(activityDiagram, trimmedLine, currentSwimlane, currentGroup);
+                checkCondition(activityDiagram, trimmedLine, currentSwimlane, currentGroup);
+                checkMerge(activityDiagram, trimmedLine, currentSwimlane, currentGroup);
 
                 // Identifica o activitate
 
-                if (Pattern.matches(LABEL_START, trimmedLine)) {
+                if (isLabelStart(trimmedLine)) {
                     if (!currentActivityLabel.isEmpty()) {
                         currentActivityLabel.delete(0, currentActivityLabel.length());
                     }
@@ -83,7 +61,7 @@ public class PlantUmlActivityParser {
                     currentActivityLabel.append(trimmedLine);
                 }
 
-                if (trimmedLine.endsWith(LABEL_END)) {
+                if (isLabelEnd(trimmedLine)) {
                     readingActivityLabel = false;
                     currentActivityLabel.deleteCharAt(0);
                     currentActivityLabel.deleteCharAt(currentActivityLabel.length() - 1);
@@ -92,29 +70,13 @@ public class PlantUmlActivityParser {
                     activityDiagram.addActivity(activityNode);
                 }
 
-                if (Pattern.matches(SWIMLANE_PATTERN, trimmedLine)) {
-                    if (!currentSwimlane.isEmpty()) {
-                        currentSwimlane.delete(0, currentSwimlane.length());
-                    }
-                    currentSwimlane.append(trimmedLine);
-                    currentSwimlane.deleteCharAt(0);
-                    currentSwimlane.deleteCharAt(currentSwimlane.length() - 1);
-                    String swimlaneName = currentSwimlane.toString();
-                    activityDiagram.getSwimlanes().add(swimlaneName);
-                }
-
-                if (Pattern.matches(GROUP_PATTERN, trimmedLine)) {
-                    String groupName = trimmedLine.replaceFirst("^(group|partition|package|rectangle|card)", "").replace("{", "").trim();
-                    currentGroup.append(groupName);
-                    activityDiagram.getGroups().add(currentGroup.toString());
-                }
-
-                if (trimmedLine.contains(GROUP_END) || trimmedLine.contains(PARTITION_END)) {
-                    currentGroup.delete(0, currentGroup.length());
-                }
+                checkSwimlane(activityDiagram, trimmedLine, currentSwimlane);
+                checkGroup(activityDiagram, trimmedLine, currentGroup);
+                checkGroupEnd(trimmedLine, currentGroup);
             }
         }
 
+        activityDiagram.addAllActivities(activityDiagram.getActivityLookup());
         activityDiagram.setElements(activityDiagram.countElements());
         activityDiagram.setActivitiesCount(activityDiagram.getElements());
         activityDiagram.setSwimlanesCount(activityDiagram.getSwimlanes().size());
@@ -123,20 +85,117 @@ public class PlantUmlActivityParser {
         return activityDiagram;
     }
 
+    private static boolean isSwimlane(String line) {
+        return Pattern.matches(SWIMLANE_PATTERN, line);
+    }
+
+    private static boolean isGroup(String line) {
+        return Pattern.matches(GROUP_PATTERN, line);
+    }
+
+    private static boolean isSwitchPattern(String line) {
+        return Pattern.matches(SWITCH_PATTERN, line);
+    }
+
+    private static boolean isCondition(String line) {
+        return Pattern.matches(CONDITIONAL_PATTERN, line);
+    }
+
+    private static boolean isFork(String line) {
+        return Pattern.matches(FORK_PATTERN, line);
+    }
+
+    private static boolean isMerge(String line) {
+        return Pattern.matches(MERGE_PATTERN, line);
+    }
+
+    private static boolean isLabelStart(String line) {
+        return Pattern.matches(LABEL_START, line);
+    }
+
+    private static boolean isLabelEnd(String line) {
+        return line.endsWith(LABEL_END);
+    }
+
     private static String getCondition(String line) {
         String condition = "";
         int indexStart;
 
-        if (Pattern.matches(SWITCH_PATTERN, line)) {
+        if (isSwitchPattern(line)) {
             indexStart = line.indexOf("(");
             condition = line.substring(indexStart + 1).trim();
         }
-        else if (Pattern.matches(CONDITIONAL_PATTERN, line)) {
+        else if (isCondition(line)) {
             indexStart = line.contains("if") ? line.indexOf("if") + "if".length() : line.indexOf("elseif") + "elseif".length();
             int indexEnd = line.indexOf("then");
             condition = line.substring(indexStart, indexEnd).replace("?", "").replace("(", "").replace(")", "").trim();
         }
 
         return condition;
+    }
+
+    private static void checkStart(ActivityDiagram activityDiagram, String trimmedLine, StringBuilder currentSwimlane, StringBuilder currentGroup) {
+        if (trimmedLine.equals(START_PATTERN)) {
+            ActivityNode startNode = new ActivityNode("Start", ActivityNodeType.START, currentSwimlane.toString(), currentGroup.toString());
+            activityDiagram.addActivity(startNode);
+        }
+    }
+
+    private static void checkEnd(ActivityDiagram activityDiagram, String trimmedLine, StringBuilder currentSwimlane, StringBuilder currentGroup) {
+        if (trimmedLine.equals(END_PATTERN.get(0)) || trimmedLine.equals(END_PATTERN.get(1))) {
+            ActivityNode endNode = new ActivityNode("Stop", ActivityNodeType.STOP, currentSwimlane.toString(), currentGroup.toString());
+            activityDiagram.addActivity(endNode);
+        }
+    }
+
+    private static void checkFork(ActivityDiagram activityDiagram, String trimmedLine, StringBuilder currentSwimlane, StringBuilder currentGroup) {
+        if (isFork(trimmedLine)) {
+            activityDiagram.setForkCount(activityDiagram.getForkCount() + 1);
+            ActivityNode forkNode = new ActivityNode("Fork" + activityDiagram.getForkCount(), ActivityNodeType.FORK, currentSwimlane.toString(), currentGroup.toString());
+            activityDiagram.addActivity(forkNode);
+        }
+    }
+
+    private static void checkCondition(ActivityDiagram activityDiagram, String trimmedLine, StringBuilder currentSwimlane, StringBuilder currentGroup) {
+        if (isSwitchPattern(trimmedLine) || isCondition(trimmedLine)) {
+            String condition = getCondition(trimmedLine);
+            ActivityNode conditionalNode = new ActivityNode(condition, ActivityNodeType.CONDITIONAL, currentSwimlane.toString(), currentGroup.toString());
+            activityDiagram.addActivity(conditionalNode);
+        }
+    }
+
+    private static void checkMerge(ActivityDiagram activityDiagram, String trimmedLine, StringBuilder currentSwimlane, StringBuilder currentGroup) {
+        if (isMerge(trimmedLine)) {
+            activityDiagram.setMergeCount(activityDiagram.getMergeCount() + 1);
+            ActivityNode mergeNode = new ActivityNode("Merge" + activityDiagram.getMergeCount(), ActivityNodeType.MERGE, currentSwimlane.toString(), currentGroup.toString());
+            activityDiagram.addActivity(mergeNode);
+        }
+    }
+
+    private static void checkSwimlane(ActivityDiagram activityDiagram, String trimmedLine, StringBuilder currentSwimlane) {
+        if (isSwimlane(trimmedLine)) {
+            if (!currentSwimlane.isEmpty()) {
+                currentSwimlane.delete(0, currentSwimlane.length());
+            }
+            currentSwimlane.append(trimmedLine);
+            currentSwimlane.deleteCharAt(0);
+            currentSwimlane.deleteCharAt(currentSwimlane.length() - 1);
+            String swimlaneName = currentSwimlane.toString();
+            activityDiagram.getSwimlanes().add(swimlaneName);
+        }
+    }
+
+    private static void checkGroup(ActivityDiagram activityDiagram, String trimmedLine, StringBuilder currentGroup) {
+        if (isGroup(trimmedLine)) {
+            String groupName = trimmedLine.replaceFirst("^(group|partition|package|rectangle|card)", "").replace("{", "").trim();
+            currentGroup.append(groupName);
+            activityDiagram.getGroups().add(currentGroup.toString());
+        }
+    }
+
+    private static void checkGroupEnd(String trimmedLine, StringBuilder currentGroup) {
+        if (trimmedLine.contains(GROUP_END) || trimmedLine.contains(PARTITION_END)) {
+            currentGroup.delete(0, currentGroup.length());
+        }
     }
 }
