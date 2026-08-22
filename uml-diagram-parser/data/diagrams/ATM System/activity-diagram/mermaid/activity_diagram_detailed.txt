@@ -1,0 +1,26 @@
+flowchart TD
+
+    A([Start]) --> B[Customer inserts debit/credit card]
+    B --> C[ATM reads card details securely]
+    C --> D[ATM requests PIN]
+    D --> E[Customer enters PIN]
+    E --> F[ATM requests transaction type]
+    F --> G[Customer selects transaction type and enters required details]
+    G --> H[ATM sends encrypted transaction request to ATM processor]
+    H --> I[ATM processor forwards request to bank]
+    I --> J{Transaction approved?}
+
+    J -- No --> K[Display transaction denied]
+    K --> L[Eject card]
+    L --> M[Display Welcome screen]
+    M --> N([End])
+
+    J -- Yes --> O[Execute transaction]
+    O --> P{Receipt requested?}
+
+    P -- Yes --> Q[Print receipt]
+    Q --> R[Eject card]
+
+    P -- No --> R
+
+    R --> M

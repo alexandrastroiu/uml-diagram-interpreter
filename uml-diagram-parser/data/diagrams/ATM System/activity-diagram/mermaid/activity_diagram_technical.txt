@@ -1,0 +1,91 @@
+flowchart LR
+
+%% =========================
+%% Swimlanes
+%% =========================
+
+subgraph Customer
+direction TB
+S((Start))
+A[Insert card]
+C[Enter PIN]
+F[Select transaction type]
+M{Confirm transaction?}
+N{Another transaction?}
+Z((End))
+end
+
+subgraph ATM_System["ATM System"]
+direction TB
+B[Read card]
+D{Card verified?}
+E[Request PIN]
+G[Authorize card]
+H[Display transaction list]
+I[Request transaction type]
+J{Transaction type?}
+P[Execute transaction]
+Q[Print receipt]
+R[Eject card]
+U[Display card error]
+V[Display PIN error]
+W[Display insufficient funds]
+X[Cancel transaction]
+end
+
+subgraph Bank
+direction TB
+K{PIN verified?}
+L[Authorize transaction]
+O{Sufficient balance?}
+end
+
+%% =========================
+%% Control Flow
+%% =========================
+
+S --> A
+A --> B
+B --> D
+
+D -- Yes --> E
+D -- No --> U
+U --> R
+R --> Z
+
+E --> C
+C --> G
+G --> K
+
+K -- Yes --> H
+K -- No --> V
+V --> R
+
+H --> I
+I --> F
+F --> J
+
+%% Withdraw Cash
+J -- Withdraw Cash --> O
+O -- Yes --> L
+O -- No --> W
+W --> N
+
+%% Balance Inquiry
+J -- Balance Inquiry --> L
+
+%% Transfer
+J -- Transfer --> O
+
+L --> M
+
+M -- Yes --> P
+M -- No --> X
+
+X --> N
+P --> Q
+Q --> N
+
+N -- Yes --> H
+N -- No --> R
+R --> Z

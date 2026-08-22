@@ -1,0 +1,68 @@
+flowchart LR
+
+%%========================
+%% Actors
+%%========================
+Customer["Customer"]
+Bank["Bank"]
+Staff["Maintenance staff"]
+
+%%========================
+%% ATM System
+%%========================
+subgraph ATM["ATM System"]
+
+UC1([Insert card])
+UC2([Read card])
+UC3([Request PIN])
+UC4([Validate card])
+UC5([Validate PIN])
+UC6([Select transaction: Cash withdrawal, Deposits, Balance inquiry, Fund transfer, Bill payment])
+UC7([Execute transaction])
+UC8([Print receipt])
+UC9([Eject card])
+UC10([End transaction])
+UC11([Approve transaction])
+UC12([Perform maintenance])
+UC13([Fix hardware])
+UC14([Update software])
+UC15([Clean ATM])
+
+end
+
+%%========================
+%% Association Relationships
+%%========================
+Customer --- UC1
+Customer --- UC2
+Customer --- UC3
+Customer --- UC6
+Customer --- UC7
+Customer --- UC8
+Customer --- UC9
+Customer --- UC10
+
+Bank --- UC4
+Bank --- UC5
+Bank --- UC11
+
+Staff --- UC12
+Staff --- UC13
+Staff --- UC14
+Staff --- UC15
+
+%%========================
+%% Include Relationships
+%%========================
+UC6 -.->|<<include>>| UC4
+UC6 -.->|<<include>>| UC5
+
+UC7 -.->|<<include>>| UC11
+UC7 -.->|<<include>>| UC6
+
+%%========================
+%% Extend Relationships
+%%========================
+UC12 -.->|<<extend>>| UC15
+UC12 -.->|<<extend>>| UC13
+UC12 -.->|<<extend>>| UC14

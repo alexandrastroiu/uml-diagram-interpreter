@@ -1,0 +1,40 @@
+stateDiagram-v2
+    [*] --> Welcome
+
+    Welcome : Display "Welcome"
+    Welcome --> ReadingCard : Customer inserts card
+
+    ReadingCard : Read card details securely
+    ReadingCard --> EnterPIN : Card read successfully
+    ReadingCard --> EjectCard : Card read/authentication failure
+    ReadingCard --> EjectCard : Customer cancels session
+
+    EnterPIN : Wait for PIN entry
+    EnterPIN --> Authenticating : PIN entered
+
+    Authenticating : Send encrypted request\nvia ATM processor to bank
+    Authenticating --> SelectTransaction : Authentication approved
+    Authenticating --> EjectCard : Authentication failed
+    Authenticating --> EjectCard : Customer cancels session
+
+    SelectTransaction : Select transaction type\n(Withdraw, Balance Inquiry, Transfer)
+    SelectTransaction --> ProcessingTransaction : Transaction details entered
+    SelectTransaction --> EjectCard : Customer cancels session
+
+    ProcessingTransaction : Bank approves/denies transaction
+    ProcessingTransaction --> ExecuteTransaction : Approved
+    ProcessingTransaction --> EjectCard : Denied
+
+    ExecuteTransaction : Execute transaction
+    ExecuteTransaction --> PrintReceipt : Receipt requested
+    ExecuteTransaction --> EjectCard : No receipt
+
+    PrintReceipt : Print receipt
+    PrintReceipt --> EjectCard
+
+    EjectCard : Eject card
+    EjectCard --> SessionEnd
+
+    SessionEnd : End transaction/session
+    SessionEnd --> Welcome : Ready for next customer
+    SessionEnd --> Welcome : Ready for next customer

@@ -1,0 +1,6 @@
+Generate a UML Activity Diagram using a Flowchart in Mermaid syntax for the transaction process in an ATM System.
+ The customer inserts a debit or credit card into the machine.
+The ATM reads the card details securely and will request the customer to enter the Personal Identification Number (PIN).
+The customer enters the PIN using the keypad. The ATM requests the type of transaction to occur (such as withdraw cash, balance inquiry, transfer). The customers selects the type of transaction and specifies other details.
+The ATM sends an encrypted request with the information to an ATM processor. The information is sent to the bank to approve or deny the transaction. If the transaction is approved, the ATM executes it, prints the receipt if requested, ejects the card and ends the transaction.
+The ATM displays the "Welcome" screen for the next user.

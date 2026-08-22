@@ -1,0 +1,1 @@
+Generate a UML State Diagram in Mermaid syntax for performing a transaction using an ATM System.

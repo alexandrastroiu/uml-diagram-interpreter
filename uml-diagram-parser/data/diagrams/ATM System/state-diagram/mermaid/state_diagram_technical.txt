@@ -1,0 +1,58 @@
+stateDiagram-v2
+
+    [*] --> Idle
+
+    state "Reading card" as ReadCard
+    state "Requesting PIN" as RequestPIN
+    state "Reading PIN" as ReadPIN
+    state "Displaying transaction list" as TransactionList
+    state "Processing transaction" as ProcessTransaction
+    state "Performing transaction" as PerformTransaction
+    state "Printing receipt" as PrintReceipt
+    state "Ejecting card" as EjectCard
+
+    Idle --> ReadCard
+
+    state CardCheck <<choice>>
+
+    ReadCard --> CardCheck
+    CardCheck --> RequestPIN : Valid card
+    CardCheck --> EjectCard : Invalid card
+
+    RequestPIN --> ReadPIN
+
+    state PINCheck <<choice>>
+
+    ReadPIN --> PINCheck
+    PINCheck --> TransactionList : Valid PIN
+    PINCheck --> RequestPIN : Invalid PIN
+
+    state TransactionCheck <<choice>>
+
+    TransactionList --> TransactionCheck : Transaction chosen
+    TransactionCheck --> ProcessTransaction : Withdraw
+    TransactionCheck --> ProcessTransaction : Deposit
+    TransactionCheck --> ProcessTransaction : Transfer
+    TransactionCheck --> ProcessTransaction : Balance inquiry
+
+    state BalanceCheck <<choice>>
+
+    ProcessTransaction --> BalanceCheck
+    BalanceCheck --> PerformTransaction : Available funds
+    BalanceCheck --> TransactionList : Insufficient funds
+
+    state ResultCheck <<choice>>
+
+    PerformTransaction --> ResultCheck
+    ResultCheck --> PrintReceipt : Successful transaction
+    ResultCheck --> TransactionList : Failed transaction
+
+    PrintReceipt --> EjectCard
+
+    state ContinueCheck <<choice>>
+
+    EjectCard --> ContinueCheck
+    ContinueCheck --> TransactionList : Another transaction
+    ContinueCheck --> Idle : Logout
+
+    Idle --> [*]

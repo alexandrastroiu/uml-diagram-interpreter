@@ -1,0 +1,94 @@
+flowchart LR
+
+%%==========================
+%% Actors
+%%==========================
+Customer([Customer])
+Bank([Bank System])
+Maintenance([Maintenance Staff])
+
+%%==========================
+%% ATM System Boundary
+%%==========================
+subgraph ATM["ATM System"]
+
+    Auth(("Authenticate Customer"))
+    ReadCard(("Read Card"))
+    EnterPIN(("Enter PIN"))
+
+    Withdraw(("Withdraw Cash"))
+    Deposit(("Deposit Funds"))
+    Balance(("Balance Inquiry"))
+    Transfer(("Transfer Funds"))
+    Bill(("Pay Bills"))
+
+    Validate(("Validate Credentials"))
+    Approve(("Approve Transaction"))
+    Execute(("Execute Transaction"))
+
+    Receipt(("Print Receipt"))
+    Eject(("Eject Card"))
+    End(("End Transaction"))
+
+    Clean(("Clean ATM"))
+    Repair(("Repair Hardware"))
+    Update(("Update Software"))
+    Security(("Apply Security Updates"))
+
+end
+
+%%==========================
+%% Customer Associations
+%%==========================
+Customer --- Withdraw
+Customer --- Deposit
+Customer --- Balance
+Customer --- Transfer
+Customer --- Bill
+
+%%==========================
+%% Maintenance Staff Associations
+%%==========================
+Maintenance --- Clean
+Maintenance --- Repair
+Maintenance --- Update
+Maintenance --- Security
+
+%%==========================
+%% Bank Associations
+%%==========================
+Bank --- Validate
+Bank --- Approve
+
+%%==========================
+%% Authentication Includes
+%%==========================
+Withdraw -. "<<include>>" .-> Auth
+Deposit -. "<<include>>" .-> Auth
+Balance -. "<<include>>" .-> Auth
+Transfer -. "<<include>>" .-> Auth
+Bill -. "<<include>>" .-> Auth
+
+Auth -. "<<include>>" .-> ReadCard
+Auth -. "<<include>>" .-> EnterPIN
+Auth -. "<<include>>" .-> Validate
+
+%%==========================
+%% Transaction Approval
+%%==========================
+Withdraw -. "<<include>>" .-> Approve
+Deposit -. "<<include>>" .-> Approve
+Balance -. "<<include>>" .-> Approve
+Transfer -. "<<include>>" .-> Approve
+Bill -. "<<include>>" .-> Approve
+
+Approve -.-> Execute
+
+%%==========================
+%% Transaction Completion
+%%==========================
+Execute -. "<<include>>" .-> Eject
+Execute -. "<<include>>" .-> End
+
+%% Optional Receipt
+Execute -. "<<extend>>" .-> Receipt

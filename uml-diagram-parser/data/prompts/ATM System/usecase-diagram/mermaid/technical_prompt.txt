@@ -1,0 +1,8 @@
+Generate a UML Use Case Diagram using a FlowChart in Mermaid syntax for an ATM System.
+The diagram should include:
+- Include at least the following actors: Customer, Bank, Maintenance staff
+- Include at least the following use cases: Insert card, Read card, Request PIN, Validate card, Validate PIN, Select transaction ( cash withdrawals, deposits, balance inquiries, fund transfers and bill payments), Execute transaction, Print receipt, Eject card, End transaction, Approve transaction,
+Perform maintenance, Fix hardware, Update software, Clean ATM.
+- Actors and use cases are linked through association relationships.
+- Use include relationships for: Select transaction includes validate card, Select transaction includes validate PIN, Execute transaction includes Approve transaction, Execute transaction includes Select transaction
+- Use extend relationships for: Perform maintenance extends clean ATM, Perform maintenance extends Fix hardware, Perform maintenance extends Update software.

@@ -1,0 +1,41 @@
+flowchart TD
+    A([Start]) --> B[Insert ATM Card]
+    B --> C[Enter PIN]
+
+    C --> D{PIN Valid?}
+
+    D -- No --> E[Display Error]
+    E --> F{Attempts < 3?}
+    F -- Yes --> C
+    F -- No --> G[Retain Card]
+    G --> Z([End])
+
+    D -- Yes --> H[Display Menu]
+    H --> I[Select Transaction]
+
+    I --> J{Transaction Type}
+
+    J --> K[Withdraw Cash]
+    J --> L[Deposit Funds]
+    J --> M[Balance Inquiry]
+
+    K --> N{Sufficient Balance?}
+    N -- No --> O[Display Insufficient Funds]
+    O --> H
+    N -- Yes --> P[Dispense Cash]
+    P --> Q[Update Account]
+
+    L --> R[Accept Deposit]
+    R --> S[Update Account]
+
+    M --> T[Retrieve Balance]
+    T --> U[Display Balance]
+
+    Q --> V{Another Transaction?}
+    S --> V
+    U --> V
+
+    V -- Yes --> H
+    V -- No --> W[Eject Card]
+    W --> X[Print Receipt]
+    X --> Z([End])

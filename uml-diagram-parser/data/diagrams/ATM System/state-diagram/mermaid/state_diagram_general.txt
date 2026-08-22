@@ -1,0 +1,28 @@
+stateDiagram-v2
+    [*] --> Idle
+
+    Idle --> CardInserted : Insert Card
+
+    CardInserted --> PINEntry : Read Card
+    PINEntry --> VerifyingPIN : Enter PIN
+
+    VerifyingPIN --> TransactionSelection : PIN Valid
+    VerifyingPIN --> PINEntry : PIN Invalid (< 3 Attempts)
+    VerifyingPIN --> CardRetained : PIN Invalid (3 Attempts)
+
+    TransactionSelection --> ProcessingTransaction : Select Transaction
+    TransactionSelection --> EjectCard : Cancel
+
+    ProcessingTransaction --> DispensingCash : Withdrawal Approved
+    ProcessingTransaction --> PrintingReceipt : Balance Inquiry / Deposit / Transfer Complete
+    ProcessingTransaction --> TransactionSelection : Another Transaction
+    ProcessingTransaction --> EjectCard : Transaction Failed
+
+    DispensingCash --> PrintingReceipt : Cash Dispensed
+
+    PrintingReceipt --> EjectCard : Receipt Printed
+    PrintingReceipt --> EjectCard : Skip Receipt
+
+    EjectCard --> Idle : Card Removed
+
+    CardRetained --> [*]
