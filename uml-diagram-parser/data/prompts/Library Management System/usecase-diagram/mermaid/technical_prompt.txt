@@ -1,0 +1,5 @@
+Generate a UML Use Case Diagram using a Flowchart in Mermaid syntax for a Library Management System.
+The diagram should include:
+- Include at least the following actors: User, Payment service, System administrator
+- Include at least the following use cases: Register, Log in, Log out, Search books, Filter books by criteria (author, year, category, title, language), View available books, View recommended books, Add books to the wish list, Request books, Modify order, Cancel an order, Read reviews, Submit reviews, Update the account profile, Process payment, Manage account, Manage platform.
+- Use include relationships for: Search books includes Log in, Filter books includes Log in, View available books includes Log in, View recommended books includes Log in, Add books to the wish list includes Log in,  Request books includes Add books to the wish list, Cancel order includes  Request books, Modify order  includes  Request books, Read reviews includes Log in, Submit reviews includes Log in,  Update the account profile includes Log in.

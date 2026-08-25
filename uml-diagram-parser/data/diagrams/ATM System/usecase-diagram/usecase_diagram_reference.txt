@@ -1,0 +1,46 @@
+@startuml
+
+actor Customer
+actor "ATM Technician" as Technician
+actor Bank
+
+rectangle "Bank ATM" {
+    usecase "Check Balances" as UC_Check
+    usecase "Deposit Funds" as UC_Deposit
+    usecase "Withdraw Cash" as UC_Withdraw
+    usecase "Transfer Funds" as UC_Transfer
+    usecase "Maintenance" as UC_Maintenance
+    usecase "Repair" as UC_Repair
+    usecase "ATM Transaction" as UC_Transaction
+    usecase "ATM Help" as UC_Help
+    usecase "Customer Authentication" as UC_Auth
+    usecase "Replenishing" as UC_Replenish
+    usecase "Upgrades" as UC_Upgrade
+    usecase "Diagnostics" as UC_Diagnostics
+}
+Customer --> UC_Check
+Customer --> UC_Deposit
+Customer --> UC_Withdraw
+Customer --> UC_Transfer
+Technician --> UC_Maintenance
+Technician --> UC_Repair
+Bank --> UC_Check
+Bank --> UC_Deposit
+Bank --> UC_Withdraw
+Bank --> UC_Transfer
+Bank --> UC_Maintenance
+Bank --> UC_Repair
+
+UC_Transaction <|-- UC_Check
+UC_Transaction <|-- UC_Deposit
+UC_Transaction <|-- UC_Withdraw
+UC_Transaction <|-- UC_Transfer
+UC_Transaction .> UC_Auth : include
+UC_Help .> UC_Transaction: extend
+
+UC_Maintenance .> UC_Replenish : include
+UC_Maintenance .> UC_Upgrade : include
+UC_Maintenance .> UC_Diagnostics : include
+UC_Repair .> UC_Diagnostics : include
+
+@enduml

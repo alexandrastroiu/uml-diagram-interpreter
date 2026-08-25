@@ -1,0 +1,75 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor User
+actor "Payment service" as PaymentService
+actor "System administrator" as Admin
+
+rectangle "Library Management System" {
+
+  usecase "Register" as UC1
+  usecase "Log in" as UC2
+  usecase "Log out" as UC3
+  usecase "Search books" as UC4
+  usecase "Filter books by criteria\n(author, year, category,\ntitle, language)" as UC5
+  usecase "View available books" as UC6
+  usecase "View recommended books" as UC7
+  usecase "Add books to the\nwish list" as UC8
+  usecase "Request books" as UC9
+  usecase "Modify order" as UC10
+  usecase "Cancel an order" as UC11
+  usecase "Read reviews" as UC12
+  usecase "Submit reviews" as UC13
+  usecase "Update account profile" as UC14
+  usecase "Process payment" as UC15
+  usecase "Manage account" as UC16
+  usecase "Manage platform" as UC17
+}
+
+'=========================
+' Actor Associations
+'=========================
+
+User -- UC1
+User -- UC2
+User -- UC3
+User -- UC4
+User -- UC5
+User -- UC6
+User -- UC7
+User -- UC8
+User -- UC9
+User -- UC10
+User -- UC11
+User -- UC12
+User -- UC13
+User -- UC14
+User -- UC15
+User -- UC16
+
+PaymentService -- UC15
+
+Admin -- UC16
+Admin -- UC17
+
+'=========================
+' Include Relationships
+'=========================
+
+UC4  .> UC2 : <<include>>
+UC5  .> UC2 : <<include>>
+UC6  .> UC2 : <<include>>
+UC7  .> UC2 : <<include>>
+UC8  .> UC2 : <<include>>
+
+UC9  .> UC8 : <<include>>
+
+UC10 .> UC9 : <<include>>
+UC11 .> UC9 : <<include>>
+
+UC12 .> UC2 : <<include>>
+UC13 .> UC2 : <<include>>
+UC14 .> UC2 : <<include>>
+
+@enduml

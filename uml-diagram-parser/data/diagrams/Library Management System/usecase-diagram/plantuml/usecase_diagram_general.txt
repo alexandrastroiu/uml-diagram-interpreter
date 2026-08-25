@@ -1,0 +1,71 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor Member
+actor Librarian
+actor Administrator as Admin
+actor "Payment Service" as Payment
+actor "Notification Service" as Notify
+
+rectangle "Library Management System" {
+
+  usecase "Register / Log In" as UC_Login
+  usecase "Search Catalog" as UC_Search
+  usecase "View Book Details" as UC_View
+  usecase "Borrow Book" as UC_Borrow
+  usecase "Return Book" as UC_Return
+  usecase "Renew Loan" as UC_Renew
+  usecase "Reserve Book" as UC_Reserve
+  usecase "Pay Fine" as UC_Pay
+  usecase "View Account & Loans" as UC_Account
+
+  usecase "Manage Books" as UC_Books
+  usecase "Manage Members" as UC_Members
+  usecase "Issue Book" as UC_Issue
+  usecase "Accept Return" as UC_Accept
+  usecase "Calculate Fine" as UC_Fine
+  usecase "Generate Reports" as UC_Reports
+  usecase "Manage Users & Roles" as UC_Users
+  usecase "Send Notifications" as UC_Notify
+}
+
+' Member interactions
+Member --> UC_Login
+Member --> UC_Search
+Member --> UC_View
+Member --> UC_Borrow
+Member --> UC_Return
+Member --> UC_Renew
+Member --> UC_Reserve
+Member --> UC_Pay
+Member --> UC_Account
+
+' Librarian interactions
+Librarian --> UC_Books
+Librarian --> UC_Members
+Librarian --> UC_Issue
+Librarian --> UC_Accept
+Librarian --> UC_Reports
+
+' Administrator interactions
+Admin --> UC_Books
+Admin --> UC_Members
+Admin --> UC_Reports
+Admin --> UC_Users
+
+' Include relationships
+UC_Borrow .> UC_Search : <<include>>
+UC_Borrow .> UC_Issue : <<include>>
+UC_Return .> UC_Accept : <<include>>
+UC_Accept .> UC_Fine : <<include>>
+UC_Pay .> UC_Fine : <<include>>
+UC_Reserve .> UC_Notify : <<include>>
+UC_Renew .> UC_Notify : <<include>>
+
+' External systems
+Payment --> UC_Pay
+Notify --> UC_Notify
+
+@enduml

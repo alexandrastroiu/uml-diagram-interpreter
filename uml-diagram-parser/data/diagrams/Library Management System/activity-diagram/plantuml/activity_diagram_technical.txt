@@ -1,0 +1,108 @@
+@startuml
+title Library Management System - Borrow Book Activity Diagram
+
+start
+
+partition User {
+    :Display login form;
+    :Enter user credentials;
+}
+
+partition "Library Management System" {
+    :Verify user credentials;
+}
+
+while (User credentials valid?) is (No)
+    partition "Library Management System" {
+        :Display "Wrong user credentials";
+    }
+    partition User {
+        :Enter user credentials;
+    }
+    partition "Library Management System" {
+        :Verify user credentials;
+    }
+endwhile (Yes)
+
+repeat
+
+partition User {
+    :View available books;
+    :View recommended books;
+    :Search books;
+    :Filter books;
+    :Select a book;
+    :Read book details;
+    :Read book reviews;
+    :Request books;
+}
+
+partition Library {
+    :Check book availability;
+}
+
+if (Book available?) then (Yes)
+
+    partition User {
+        :Confirm request;
+    }
+
+    if (Request confirmed?) then (Yes)
+
+        partition Library {
+            :Issue book;
+        }
+
+        partition User {
+            :Return book;
+        }
+
+        if (Apply for renewal?) then (Yes)
+
+            partition Library {
+                :Renew loan;
+            }
+
+        else (No)
+
+            partition Library {
+                :Check return status;
+            }
+
+            if (Book returned on time?) then (Yes)
+
+            else (No)
+
+                partition Library {
+                    :Charge fine;
+                }
+
+            endif
+
+        endif
+
+    else (No)
+
+        partition User {
+            :Cancel membership;
+        }
+
+    endif
+
+else (No)
+
+    partition "Library Management System" {
+        :Display "Book unavailable";
+    }
+
+endif
+
+repeat while (Place another request?) is (Yes)
+
+partition User {
+    :Logout;
+}
+
+stop
+
+@enduml

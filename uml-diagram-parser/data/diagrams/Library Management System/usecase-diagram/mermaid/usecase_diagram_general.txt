@@ -1,0 +1,45 @@
+flowchart LR
+    %% Actors
+    Member[👤 Member]
+    Librarian[👨‍💼 Librarian]
+    Admin[⚙️ Administrator]
+
+    %% Library Management System Boundary
+    subgraph LMS["Library Management System"]
+        UC1((Search Catalog))
+        UC2((Borrow Book))
+        UC3((Return Book))
+        UC4((Reserve Book))
+        UC5((Renew Loan))
+        UC6((Pay Fine))
+        UC7((Register Member))
+        UC8((Manage Books))
+        UC9((Manage Members))
+        UC10((Generate Reports))
+    end
+
+    %% Member Associations
+    Member --- UC1
+    Member --- UC2
+    Member --- UC3
+    Member --- UC4
+    Member --- UC5
+    Member --- UC6
+
+    %% Librarian Associations
+    Librarian --- UC2
+    Librarian --- UC3
+    Librarian --- UC7
+    Librarian --- UC8
+    Librarian --- UC9
+
+    %% Administrator Associations
+    Admin --- UC8
+    Admin --- UC9
+    Admin --- UC10
+
+    %% Optional Include Relationships
+    UC2 -. "<<include>>" .-> UC1
+    UC4 -. "<<include>>" .-> UC1
+    UC5 -. "<<include>>" .-> UC2
+    UC3 -. "<<extend>>" .-> UC6

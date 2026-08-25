@@ -1,0 +1,76 @@
+@startuml
+title Library Management System - Book Borrowing State Diagram
+
+[*] --> LoggedOut
+
+LoggedOut --> LoggedIn : Login
+
+state LoggedIn {
+
+    [*] --> Browsing
+
+    state Browsing {
+        [*] --> ViewingCatalog
+
+        ViewingCatalog --> ViewingCatalog : Browse books
+        ViewingCatalog --> ViewingCatalog : View recommendations
+        ViewingCatalog --> ViewingCatalog : Search book
+        ViewingCatalog --> ViewingCatalog : Apply filters
+
+        ViewingCatalog --> BookSelected : Select book(s)
+    }
+
+    BookSelected --> ViewingDetails : Read book details
+    ViewingDetails --> ViewingReviews : Read reviews
+    ViewingReviews --> WaitingSelection
+    ViewingDetails --> WaitingSelection
+
+    WaitingSelection --> RequestSubmitted : Submit borrowing request
+
+    RequestSubmitted --> WaitingApproval
+
+    WaitingApproval --> Borrowed : Request approved
+    WaitingApproval --> RequestRejected : Request rejected
+
+    RequestRejected : Display rejection reason\nNotify user
+
+    RequestRejected --> Browsing : Make another request
+    RequestRejected --> [*] : Logout
+
+    state Borrowed {
+
+        [*] --> BookOnLoan
+
+        BookOnLoan --> RenewalRequested : Apply for renewal
+        RenewalRequested --> BookOnLoan : Renewal approved
+
+        BookOnLoan --> Returned : Return before due date
+        RenewalRequested --> Returned : Return after renewal
+
+        BookOnLoan --> Overdue : Return date exceeded
+        RenewalRequested --> Overdue : Renewed due date exceeded
+
+        Overdue --> FineIssued : Fine generated
+        FineIssued --> Returned : Return book
+
+        Returned --> [*]
+    }
+
+    --
+    state MembershipCancellation {
+        [*] --> CancellationRequested
+        CancellationRequested --> WaitingForReturns : Outstanding books exist
+        WaitingForReturns --> MembershipCancelled : All books returned
+    }
+
+    Browsing --> MembershipCancellation : Cancel membership
+    BookSelected --> MembershipCancellation : Cancel membership
+    WaitingApproval --> MembershipCancellation : Cancel membership
+    Borrowed --> MembershipCancellation : Cancel membership
+
+}
+
+LoggedIn --> LoggedOut : Logout
+MembershipCancelled --> LoggedOut
+
+@enduml

@@ -1,0 +1,7 @@
+Generate a UML Activity Diagram using a Flowchart in Mermaid syntax for the process of borrowing a book using a Library Management System.
+The system displays the login or registration form. The user enters username and password. If the authentication fails a message is displayed and the user is prompted to try again.
+After logging in, the user can browse the available books, see recommended books, search a specific book and apply filters.
+The user can select a book, read book details and reviews.
+After requesting one or multiple books, the user will wait for the system to approve the request. The user can return the book until the return date or apply online for a renewal.
+If the book is not returned in time, the user will receive a fine.
+The user can cancel the membership at any time, but must return all the books.

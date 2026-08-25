@@ -1,0 +1,69 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor User
+actor "System Administrator" as Admin
+actor "Payment Service Provider" as PSP
+
+rectangle "Library Management System" {
+
+  usecase "Register" as UC_Register
+  usecase "Log In" as UC_Login
+  usecase "Log Out" as UC_Logout
+
+  usecase "Search Books" as UC_Search
+  usecase "Filter Books" as UC_Filter
+  usecase "View Available Books" as UC_ViewAvailable
+  usecase "View Recommended Books" as UC_Recommend
+
+  usecase "Add Book to Wish List" as UC_Wishlist
+
+  usecase "Request Book" as UC_Request
+  usecase "Modify Order" as UC_Modify
+  usecase "Cancel Order" as UC_Cancel
+
+  usecase "Read Reviews" as UC_ReadReviews
+  usecase "Submit Review" as UC_SubmitReview
+
+  usecase "Update Account Profile" as UC_UpdateProfile
+
+  usecase "Pay Fine" as UC_PayFine
+  usecase "Process Payment" as UC_ProcessPayment
+
+  usecase "Manage Accounts" as UC_ManageAccounts
+  usecase "Manage Platform" as UC_ManagePlatform
+}
+
+' User interactions
+User --> UC_Register
+User --> UC_Login
+User --> UC_Logout
+
+User --> UC_Search
+User --> UC_ViewAvailable
+User --> UC_Recommend
+User --> UC_Wishlist
+
+User --> UC_Request
+User --> UC_Modify
+User --> UC_Cancel
+
+User --> UC_ReadReviews
+User --> UC_SubmitReview
+
+User --> UC_UpdateProfile
+User --> UC_PayFine
+
+' Administrator interactions
+Admin --> UC_ManageAccounts
+Admin --> UC_ManagePlatform
+
+' External payment provider
+PSP --> UC_ProcessPayment
+
+' Relationships
+UC_Search .> UC_Filter : <<include>>
+UC_PayFine .> UC_ProcessPayment : <<include>>
+
+@enduml

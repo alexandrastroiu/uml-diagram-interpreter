@@ -1,0 +1,31 @@
+@startuml
+
+:Enquiry about books;
+:Check availability of book;
+
+if (Book available?) then (Available)
+    :Validate member;
+else (Not Available)
+    :Book not available;
+    stop
+endif
+
+if (Valid member?) then (Valid)
+    :Check number of books issued to member;
+
+    if (Qouta exceeded?) then (Available)
+       'Continue
+    else (Maximum qouta exceeded)
+        :Book not issued;
+        stop
+    endif
+else (Not valid)
+:Register member;
+endif
+
+:Issue book;
+:Add member, book and issue details;
+:Update book status;
+stop
+
+@enduml

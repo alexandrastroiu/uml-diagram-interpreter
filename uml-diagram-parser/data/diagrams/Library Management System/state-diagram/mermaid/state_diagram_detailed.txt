@@ -1,0 +1,59 @@
+stateDiagram-v2
+    [*] --> LoggedOut
+
+    LoggedOut --> LoggedIn : Login
+
+    state LoggedIn {
+        [*] --> Browsing
+
+        Browsing --> Browsing : Browse books
+        Browsing --> Browsing : View recommendations
+        Browsing --> Browsing : Search books
+        Browsing --> Browsing : Apply filters
+
+        Browsing --> ViewingBook : Select book
+        ViewingBook --> Browsing : Back to browsing
+
+        ViewingBook --> WaitingSelection : Add book(s)
+
+        WaitingSelection : Waiting for user\n to select one or more books
+        WaitingSelection --> WaitingSelection : Add/remove books
+        WaitingSelection --> ApprovalPending : Submit borrow request
+
+        ApprovalPending : Waiting for system\napproval
+
+        ApprovalPending --> Borrowing : Request approved
+        ApprovalPending --> RequestRejected : Request rejected
+
+        RequestRejected --> WaitingSelection : Make another request
+        RequestRejected --> [*] : Logout
+
+        state Borrowing {
+            [*] --> Borrowed
+
+            Borrowed --> RenewalRequested : Apply for renewal
+            RenewalRequested --> Borrowed : Renewal approved
+
+            Borrowed --> Returned : Return before due date
+            Borrowed --> Overdue : Return date exceeded
+
+            Overdue --> Fined : Fine issued
+            Fined --> Returned : Return book
+        }
+    }
+
+    LoggedIn --> LoggedOut : Logout
+
+    LoggedIn --> MembershipCancellation : Cancel membership
+
+    state MembershipCancellation {
+        [*] --> CheckBorrowedBooks
+
+        CheckBorrowedBooks --> ReturnAllBooks : Books still borrowed
+        ReturnAllBooks --> MembershipCancelled : All books returned
+
+        CheckBorrowedBooks --> MembershipCancelled : No borrowed books
+    }
+
+    MembershipCancelled --> LoggedOut
+    Returned --> LoggedIn

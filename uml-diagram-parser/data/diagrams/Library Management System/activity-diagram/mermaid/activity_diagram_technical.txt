@@ -1,0 +1,98 @@
+flowchart LR
+
+%% Initial and Final Nodes
+Start((Start))
+End((End))
+
+%% ---------------- USER ----------------
+subgraph User
+    U1[Display login form]
+    U2[Enter user credentials]
+    U3[View available books]
+    U4[View recommended books]
+    U5[Search books]
+    U6[Filter books]
+    U7[Select a book]
+    U8[Read book details]
+    U9[Read book reviews]
+    U10[Request books]
+    U11[Confirm request]
+    U12[Return book]
+    U13[Apply for renewal]
+    U14[Cancel membership]
+    U15[Logout]
+end
+
+%% -------- LIBRARY MANAGEMENT SYSTEM --------
+subgraph Library_Management_System
+    S1[Verify user credentials]
+    S2[Display Wrong user credentials]
+
+    D1{Credentials valid?}
+    D2{Book available?}
+    D3{Request confirmed?}
+    D4{Another request?}
+
+    S3[Check book availability]
+    S4[Display Book unavailable]
+end
+
+%% ---------------- LIBRARY ----------------
+subgraph Library
+    L1[Issue book]
+    L2[Renew loan]
+    L3[Charge fine]
+end
+
+%% Authentication
+Start --> U1
+U1 --> U2
+U2 --> S1
+S1 --> D1
+
+D1 -- No --> S2
+S2 --> U2
+D1 -- Yes --> U3
+
+%% Browse Books
+U3 --> U4
+U4 --> U5
+U5 --> U6
+U6 --> U7
+U7 --> U8
+U8 --> U9
+U9 --> U10
+
+%% Availability Check
+U10 --> S3
+S3 --> D2
+
+D2 -- No --> S4
+S4 --> D4
+
+D2 -- Yes --> U11
+
+%% Request Confirmation
+U11 --> D3
+
+D3 -- No --> U14
+D3 -- Yes --> L1
+
+%% Borrowing Process
+L1 --> U12
+U12 --> U13
+
+%% Renewal
+U13 -- Yes --> L2
+U13 -- No --> L3
+
+L2 --> D4
+L3 --> D4
+
+%% Continue or Logout
+U14 --> D4
+
+D4 -- Yes --> U3
+D4 -- No --> U15
+
+U15 --> End

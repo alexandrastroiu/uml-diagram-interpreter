@@ -1,0 +1,107 @@
+ @startuml
+title Library Management System - Borrowing a Book
+
+|Library Management System|
+start
+:Display login or registration form;
+
+repeat
+    |User|
+    :Enter username and password;
+
+    |Library Management System|
+    :Authenticate user;
+
+    if (Authentication successful?) then (Yes)
+        break
+    else (No)
+        :Display authentication failure message;
+        :Prompt user to try again;
+    endif
+repeat while (Retry login?) is (Yes)
+
+|User|
+repeat
+    :Browse available books;
+
+    fork
+        :View recommended books;
+    fork again
+        :Search for a specific book;
+    fork again
+        :Apply filters;
+    end fork
+
+    :Select a book;
+    :Read book details and reviews;
+    :Add book to borrowing request;
+
+repeat while (Request another book?) is (Yes)
+
+:Submit borrowing request;
+
+|Library Management System|
+:Validate request;
+:Wait for approval decision;
+
+if (Request approved?) then (Yes)
+    :Approve request;
+    :Issue requested book(s);
+    :Set return date;
+else (No)
+    :Reject request;
+    :Notify user;
+    stop
+endif
+
+|User|
+while (Books still borrowed?) is (Yes)
+
+    if (Cancel membership?) then (Yes)
+        :Request membership cancellation;
+        :Return all borrowed books;
+
+        |Library Management System|
+        :Verify all books are returned;
+        :Cancel membership;
+        stop
+
+    else (No)
+
+        if (Need renewal?) then (Yes)
+            |User|
+            :Apply online for renewal;
+
+            |Library Management System|
+            :Review renewal request;
+
+            if (Renewal approved?) then (Yes)
+                :Extend return date;
+            else (No)
+                :Notify renewal rejected;
+            endif
+        endif
+
+        |User|
+        if (Book returned before due date?) then (Yes)
+            :Return book;
+
+            |Library Management System|
+            :Record return;
+        else (No)
+            |Library Management System|
+            :Issue fine;
+
+            |User|
+            :Pay fine;
+            :Return book;
+
+            |Library Management System|
+            :Record payment and return;
+        endif
+    endif
+
+endwhile (No)
+
+stop
+@enduml

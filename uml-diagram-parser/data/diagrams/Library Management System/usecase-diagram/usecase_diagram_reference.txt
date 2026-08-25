@@ -1,0 +1,34 @@
+@startuml
+
+actor Borrower
+actor Librarian
+
+usecase "Make Reservation" as UC1
+usecase "Remove Reservation" as UC2
+usecase "Lend item" as UC3
+usecase "Return of idea" as UC4
+usecase Maintenance as UC5
+usecase "Remove/Update title" as UC6
+usecase "Add title" as UC7
+usecase "Remove item" as UC8
+usecase "Add item" as UC9
+usecase "Add borrower" as UC10
+usecase "Remove/Update borrower" as UC11
+
+Librarian --> UC5
+
+UC5 .> UC6 : include
+UC5 .> UC7 : include
+UC5 .> UC8 : include
+UC5 .> UC9 : include
+UC5 .> UC10 : include
+UC5 .> UC11 : include
+
+
+Librarian --> UC1
+Librarian --> UC2
+Librarian --> UC3
+Librarian --> UC4
+Borrower --> Librarian : <<comunicate>>
+
+@enduml

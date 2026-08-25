@@ -1,0 +1,5 @@
+Generate a UML Use Case Diagram in PlantUML syntax for a Library Management System.
+Users can register or log into an existing account and exit the system by logging out.
+The system allows users to search books, filter books by criteria (author, year, category, title, language), view available books, view recommended books, add books to the wish list, request books, modify or cancel an order, read and submit reviews, update the account profile.
+The payment service provider handles payment processing for fines.
+System administrators manage all acounts and the platform.

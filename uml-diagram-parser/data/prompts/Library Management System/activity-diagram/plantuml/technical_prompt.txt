@@ -1,0 +1,8 @@
+Generate a UML Activity Diagram in PlantUML syntax for the process of borrowing a book using a Library Management System.
+The diagram should include:
+-  Swimlanes for modelling the interactions between the user, the library and the Library Management System.
+- Include at least the following Activity Nodes:  Display login form,  Enter user credentials,  Verify user credentials, Display "Wrong user credentials",
+View available books, View recommended books, Search books, Filter books, Select a book, Read book details, Read book reviews, Request books,
+Confirm request, Return book, Apply for renewal, Charge fine, Cancel membership, Logout.
+- Control Flows connect activities in the correct order.
+- Decision Nodes with guard conditions for: user credentials verification, book availability, confirm request , place another request or end the session.

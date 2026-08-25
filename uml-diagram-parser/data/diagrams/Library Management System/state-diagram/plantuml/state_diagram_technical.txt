@@ -1,0 +1,75 @@
+@startuml
+title Library Management System - Borrow a Book
+
+[*] --> Idle
+
+state "Displaying login form" as LoginForm
+state "Authenticating user" as AuthUser
+state "Displaying home page" as Home
+state "Browsing books" as BrowseBooks
+state "Displaying books" as DisplayBooks
+state "Select book" as SelectBook
+state "Display book information" as BookInfo
+state "Display recommended books" as RecommendedBooks
+state "Filter books" as FilterBooks
+state "Display book reviews" as BookReviews
+state "Waiting for selected book" as WaitingBook
+state "Send request" as SendRequest
+state "Confirm request" as ConfirmRequest
+state "Charge fine" as ChargeFine
+state "Display \"Request denied\"" as RequestDenied
+state "Logging out" as Logout
+
+Idle --> LoginForm : User starts session
+LoginForm --> AuthUser : Submit credentials
+
+state CredentialsChoice <<choice>>
+
+AuthUser --> CredentialsChoice
+CredentialsChoice --> LoginForm : [Invalid User credentials]
+CredentialsChoice --> Home : [Logged in successfully]
+
+Home --> BrowseBooks
+
+BrowseBooks --> DisplayBooks
+BrowseBooks --> RecommendedBooks
+
+DisplayBooks --> FilterBooks
+RecommendedBooks --> FilterBooks
+
+FilterBooks --> DisplayBooks : Apply filters
+
+DisplayBooks --> SelectBook
+RecommendedBooks --> SelectBook
+
+state AvailabilityChoice <<choice>>
+
+SelectBook --> AvailabilityChoice
+AvailabilityChoice --> BookInfo : [Book available]
+AvailabilityChoice --> DisplayBooks : [No books available]
+
+BookInfo --> BookReviews
+BookReviews --> WaitingBook
+
+WaitingBook --> SendRequest
+
+state RequestChoice <<choice>>
+
+SendRequest --> RequestChoice
+RequestChoice --> ConfirmRequest : [Approved request]
+RequestChoice --> RequestDenied : [Request denied]
+
+ConfirmRequest --> ChargeFine : Return overdue
+ChargeFine --> ContinueChoice
+
+RequestDenied --> ContinueChoice
+
+state ContinueChoice <<choice>>
+
+ContinueChoice --> BrowseBooks : [Continue]
+ContinueChoice --> Logout : [Log out]
+
+Logout --> Idle
+Idle --> [*]
+
+@enduml

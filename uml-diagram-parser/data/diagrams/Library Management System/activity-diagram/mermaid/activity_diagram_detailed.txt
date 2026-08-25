@@ -1,0 +1,47 @@
+flowchart TD
+    A([Start]) --> B[Display Login / Registration Form]
+    B --> C[Enter Username and Password]
+
+    C --> D{Authentication Successful?}
+
+    D -- No --> E[Display Authentication Failed Message]
+    E --> C
+
+    D -- Yes --> F[Browse Available Books]
+
+    F --> G[View Recommended Books]
+    G --> H[Search for a Book]
+    H --> I[Apply Filters]
+    I --> J[Select Book]
+    J --> K[Read Book Details and Reviews]
+
+    K --> L[Request One or Multiple Books]
+
+    L --> M[Wait for System Approval]
+    M --> N{Request Approved?}
+
+    N -- No --> F
+    N -- Yes --> O[Borrow Book(s)]
+
+    O --> P{Choose Next Action}
+
+    P -->|Return Book| Q{Returned Before Due Date?}
+    Q -- Yes --> R[Complete Return]
+    Q -- No --> S[Receive Fine]
+    S --> R
+
+    P -->|Apply for Renewal| T[Submit Online Renewal Request]
+    T --> U{Renewal Approved?}
+    U -- Yes --> O
+    U -- No --> P
+
+    P -->|Cancel Membership| V{Any Borrowed Books?}
+    V -- Yes --> W[Return All Borrowed Books]
+    W --> X[Cancel Membership]
+    V -- No --> X
+
+    R --> Y{Cancel Membership?}
+    Y -- Yes --> V
+    Y -- No --> Z([End])
+
+    X --> Z

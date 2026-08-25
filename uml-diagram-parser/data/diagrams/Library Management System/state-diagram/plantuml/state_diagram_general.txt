@@ -1,0 +1,57 @@
+@startuml
+hide empty description
+
+skinparam shadowing false
+
+title Library Management System — Borrowing a Book
+
+[*] --> Searching : Start borrowing process
+
+state Searching
+state BookSelected
+state AvailabilityCheck
+state Reserved
+state BorrowingValidation
+state CheckedOut
+state OnLoan
+state RenewalCheck
+state Overdue
+state Returned
+state Lost
+state BorrowingRejected
+
+Searching --> BookSelected : Select book
+BookSelected --> AvailabilityCheck : Request availability
+
+AvailabilityCheck --> Reserved : [book unavailable] / place reservation
+Reserved --> AvailabilityCheck : Book becomes available
+Reserved --> [*] : Cancel reservation
+
+AvailabilityCheck --> BorrowingValidation : [book available]
+
+BorrowingValidation --> CheckedOut : [member valid\nAND loan limit not reached]
+BorrowingValidation --> BorrowingRejected : [invalid member\nOR fines/loan limit]
+BorrowingRejected --> [*]
+
+CheckedOut : entry / create loan record
+CheckedOut : entry / set due date
+CheckedOut : entry / mark book as borrowed
+CheckedOut --> OnLoan : Book issued
+
+OnLoan --> RenewalCheck : Request renewal
+RenewalCheck --> OnLoan : [renewal allowed] / extend due date
+RenewalCheck --> OnLoan : [renewal denied]
+
+OnLoan --> Overdue : Due date passed
+OnLoan --> Returned : Return book on time
+Overdue --> Returned : Return book / calculate fine
+Overdue --> Lost : Report book lost
+
+Returned : entry / close loan record
+Returned : entry / mark book as available
+Returned --> [*]
+
+Lost : entry / charge replacement fee
+Lost --> [*]
+
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+
+state "student/faculty login" as login
+[*] --> login : start
+state "search book" as search
+login --> search : userid and password
+state "request book" as request
+search --> request : found book
+state "receive book" as receive
+request --> receive : request librarian for book
+state "return book and pay fine (if any)"
+receive --> return : pay the fine
+state "profile update and signout" as signout
+return --> signout : pay the fine
+signout --> stop
+
+@enduml

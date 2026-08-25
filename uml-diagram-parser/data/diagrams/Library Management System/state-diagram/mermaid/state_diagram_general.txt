@@ -1,0 +1,32 @@
+stateDiagram-v2
+    [*] --> Idle
+
+    Idle --> SearchingBook : Search for book
+    SearchingBook --> BookSelected : Book selected
+
+    BookSelected --> CheckingAvailability : Request borrow
+
+    CheckingAvailability --> Available : Book available
+    CheckingAvailability --> Unavailable : Book unavailable
+
+    Unavailable --> SearchingBook : Search another book
+
+    Available --> VerifyingMember : Verify member account
+
+    VerifyingMember --> Eligible : Membership valid
+    VerifyingMember --> Ineligible : Membership invalid / Limit reached
+
+    Ineligible --> Idle : Borrow request denied
+
+    Eligible --> IssuingBook : Issue book
+    IssuingBook --> Borrowed : Book issued successfully
+
+    Borrowed --> Returned : Book returned
+    Returned --> InspectingBook : Inspect returned book
+
+    InspectingBook --> Available : Book in good condition
+    InspectingBook --> Maintenance : Damaged book
+
+    Maintenance --> Available : Repaired
+
+    Available --> [*]

@@ -1,0 +1,6 @@
+Generate a UML State Diagram in PlantUML syntax for borrowing a book using a Library Management System.
+The diagram should include:
+- One Initial State and one Final State
+- Include at least the following States: Idle, Displaying login form, Authenticating user, Displaying home page, Browsing books, Displaying books, Select book, Display book information, Display recommended books, Filter books, Display book reviews, Waiting for selected book, Send request, Confirm request, Charge fine, Display "Request denied", Logging out.
+- Use Choice States with guard conditions for:  user credentials verification, book availability, confirm request , place another request or end the session.
+- Use at least the following labels for guard conditions:Invalid User credentials, Logged in successfully,Approved request, Request denied, Book available, No books available, Continue, Log out.

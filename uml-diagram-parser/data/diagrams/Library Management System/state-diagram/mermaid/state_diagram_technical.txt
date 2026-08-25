@@ -1,0 +1,68 @@
+stateDiagram-v2
+
+    [*] --> Idle
+
+    Idle --> LoginForm
+
+    state "Displaying login form" as LoginForm
+    state "Authenticating user" as AuthUser
+    state "Displaying home page" as Home
+    state "Browsing books" as BrowseBooks
+    state "Displaying books" as DisplayBooks
+    state "Display recommended books" as RecommendedBooks
+    state "Filter books" as FilterBooks
+    state "Select book" as SelectBook
+    state "Display book information" as BookInfo
+    state "Display book reviews" as BookReviews
+    state "Waiting for selected book" as WaitingBook
+    state "Send request" as SendRequest
+    state "Confirm request" as ConfirmRequest
+    state "Charge fine" as ChargeFine
+    state "Request denied" as RequestDenied
+    state "Logging out" as Logout
+
+    LoginForm --> AuthUser
+
+    state CredentialsCheck <<choice>>
+    AuthUser --> CredentialsCheck
+    CredentialsCheck --> LoginForm : Invalid User credentials
+    CredentialsCheck --> Home : Logged in successfully
+
+    Home --> BrowseBooks
+
+    BrowseBooks --> DisplayBooks
+    BrowseBooks --> RecommendedBooks
+
+    DisplayBooks --> FilterBooks
+    RecommendedBooks --> FilterBooks
+
+    FilterBooks --> DisplayBooks
+
+    DisplayBooks --> SelectBook
+    RecommendedBooks --> SelectBook
+
+    state AvailabilityCheck <<choice>>
+    SelectBook --> AvailabilityCheck
+    AvailabilityCheck --> BookInfo : Book available
+    AvailabilityCheck --> DisplayBooks : No books available
+
+    BookInfo --> BookReviews
+    BookReviews --> WaitingBook
+    WaitingBook --> SendRequest
+
+    state RequestCheck <<choice>>
+    SendRequest --> RequestCheck
+    RequestCheck --> ConfirmRequest : Approved request
+    RequestCheck --> RequestDenied : Request denied
+
+    ConfirmRequest --> ChargeFine
+
+    state ContinueCheck <<choice>>
+    ChargeFine --> ContinueCheck
+    RequestDenied --> ContinueCheck
+
+    ContinueCheck --> BrowseBooks : Continue
+    ContinueCheck --> Logout : Log out
+
+    Logout --> Idle
+    Idle --> [*]

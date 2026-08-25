@@ -1,0 +1,34 @@
+@startuml
+
+start
+
+:Verify access code;
+
+if (Valid access code?) then (correct)
+    :Ask for amount;
+else (incorrect)
+    :Handle incorrect access code;
+
+    if (Resolve incorrect code?) then (resolved)
+        :Ask for amount;
+    else (not resolved)
+        stop
+    endif
+
+endif
+
+
+fork
+    if (Amount available?) then (amount available)
+          :Dispense cash;
+    else (amount not available)
+    endif
+fork again
+    :Prepare to print receipt;
+end fork
+
+   :Finish transaction and print receipt;
+
+stop
+
+@enduml

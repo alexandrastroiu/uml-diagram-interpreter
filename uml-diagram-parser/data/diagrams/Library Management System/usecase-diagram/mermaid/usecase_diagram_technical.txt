@@ -1,0 +1,76 @@
+flowchart LR
+
+%%========================
+%% Actors
+%%========================
+User["User"]
+Payment["Payment service"]
+Admin["System administrator"]
+
+%%========================
+%% Library Management System
+%%========================
+subgraph LMS["Library Management System"]
+
+UC1([Register])
+UC2([Log in])
+UC3([Log out])
+UC4([Search books])
+UC5([Filter books by criteria: author, year, category, title, language])
+UC6([View available books])
+UC7([View recommended books])
+UC8([Add books to the wish list])
+UC9([Request books])
+UC10([Modify order])
+UC11([Cancel an order])
+UC12([Read reviews])
+UC13([Submit reviews])
+UC14([Update the account profile])
+UC15([Process payment])
+UC16([Manage account])
+UC17([Manage platform])
+
+end
+
+%%========================
+%% Association Relationships
+%%========================
+User --- UC1
+User --- UC2
+User --- UC3
+User --- UC4
+User --- UC5
+User --- UC6
+User --- UC7
+User --- UC8
+User --- UC9
+User --- UC10
+User --- UC11
+User --- UC12
+User --- UC13
+User --- UC14
+User --- UC15
+User --- UC16
+
+Payment --- UC15
+
+Admin --- UC16
+Admin --- UC17
+
+%%========================
+%% Include Relationships
+%%========================
+UC4 -.->|<<include>>| UC2
+UC5 -.->|<<include>>| UC2
+UC6 -.->|<<include>>| UC2
+UC7 -.->|<<include>>| UC2
+UC8 -.->|<<include>>| UC2
+
+UC9 -.->|<<include>>| UC8
+
+UC10 -.->|<<include>>| UC9
+UC11 -.->|<<include>>| UC9
+
+UC12 -.->|<<include>>| UC2
+UC13 -.->|<<include>>| UC2
+UC14 -.->|<<include>>| UC2

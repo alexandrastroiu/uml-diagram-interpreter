@@ -1,0 +1,35 @@
+@startuml
+title Library Management System - Borrow Book Activity Diagram
+
+start
+
+:Member logs into Library Management System;
+:Search for desired book;
+
+if (Book found?) then (Yes)
+    :Select book;
+
+    if (Book available?) then (Yes)
+        :Validate member account;
+
+        if (Membership valid?) then (Yes)
+            :Issue book;
+            :Update inventory;
+            :Set due date;
+            :Generate borrowing record;
+            :Display confirmation;
+        else (No)
+            :Display "Membership Invalid or Expired";
+        endif
+
+    else (No)
+        :Display "Book Not Available";
+    endif
+
+else (No)
+    :Display "Book Not Found";
+endif
+
+stop
+
+@enduml

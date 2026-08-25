@@ -1,0 +1,21 @@
+flowchart TD
+    A([Start]) --> B[Member logs into Library Management System]
+    B --> C[Search for a book]
+    C --> D{Book available?}
+
+    D -- Yes --> E[Select the book]
+    E --> F[Submit borrow request]
+    F --> G[System verifies member eligibility]
+
+    G --> H{Eligible?}
+    H -- Yes --> I[Issue the book]
+    I --> J[Update library inventory]
+    J --> K[Record borrowing transaction]
+    K --> L[Display confirmation]
+    L --> M([End])
+
+    H -- No --> N[Display borrowing denied]
+    N --> M
+
+    D -- No --> O[Display book unavailable]
+    O --> M

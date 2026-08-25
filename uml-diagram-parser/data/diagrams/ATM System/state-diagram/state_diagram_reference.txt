@@ -1,0 +1,30 @@
+@startuml
+
+[*] --> Off
+state "Self Test" as Test
+Off --> Test : turn on / startup
+Test --> Idle
+Idle --> Maintenance : service
+Idle --> Off : turnoff / shutDown
+state "Serving Customer" as Serving
+Idle --> Serving : cardInserted
+Serving --> Idle : cancel
+Serving --> Idle
+Maintenance --> Test
+state "Out of Service" as Out
+Maintenance --> Out : failure
+Out --> Maintenance : service
+Test --> Out : failure
+Out --> Off : turnoff / shutDown
+Serving --> Out : failure
+
+state Serving {
+state "Customer Authentication" as Authentication
+state "Selecting Transaction" as Select
+[*] --> Authentication
+Authentication --> Select
+Select --> Transaction
+Transaction --> [*]
+}
+
+@enduml
