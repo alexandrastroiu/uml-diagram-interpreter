@@ -15,24 +15,28 @@ public class ActivityDiagram extends UmlDiagram {
     private LinkedHashSet<ControlFlow> controlFlows;
     private int activitiesCount;
     private int swimlanesCount;
+    private int initialStatesCount;
+    private int finalStatesCount;
     private int forkCount;
     private int mergeCount;
-    private int conditionalNodes;
+    private int conditionalNodesCount;
 
     // Constructor
 
     public ActivityDiagram() {
         super();
-        activities = new LinkedHashSet<>();
-        activityLookup = new LinkedHashMap<>();
-        swimlanes = new LinkedHashSet<>();
-        groups = new LinkedHashSet<>();
-        controlFlows = new LinkedHashSet<>();
-        activitiesCount = 0;
-        swimlanesCount = 0;
-        forkCount = 0;
-        mergeCount = 0;
-        conditionalNodes = 0;
+        this.activities = new LinkedHashSet<>();
+        this.activityLookup = new LinkedHashMap<>();
+        this.swimlanes = new LinkedHashSet<>();
+        this.groups = new LinkedHashSet<>();
+        this.controlFlows = new LinkedHashSet<>();
+        this.activitiesCount = 0;
+        this.swimlanesCount = 0;
+        this.initialStatesCount = 0;
+        this.finalStatesCount = 0;
+        this.forkCount = 0;
+        this.mergeCount = 0;
+        this.conditionalNodesCount = 0;
     }
 
     // Getters, setters
@@ -101,12 +105,28 @@ public class ActivityDiagram extends UmlDiagram {
         this.mergeCount = mergeCount;
     }
 
-    public int getConditionalNodes() {
-        return conditionalNodes;
+    public int getConditionalNodesCount() {
+        return conditionalNodesCount;
     }
 
-    public void setConditionalNodes(int conditionalNodes) {
-        this.conditionalNodes = conditionalNodes;
+    public void setConditionalNodesCount(int conditionalNodesCount) {
+        this.conditionalNodesCount = conditionalNodesCount;
+    }
+
+    public int getInitialStatesCount() {
+        return initialStatesCount;
+    }
+
+    public void setInitialStatesCount(int initialStatesCount) {
+        this.initialStatesCount = initialStatesCount;
+    }
+
+    public int getFinalStatesCount() {
+        return finalStatesCount;
+    }
+
+    public void setFinalStatesCount(int finalStatesCount) {
+        this.finalStatesCount = finalStatesCount;
     }
 
     public LinkedHashMap<String, ActivityNode> getActivityLookup() {
@@ -134,9 +154,9 @@ public class ActivityDiagram extends UmlDiagram {
 
         if (!activityNodes.containsKey(name)) {
             activityNodes.put(name, activityNode);
-            if (alias != null && !alias.isEmpty()) {
-                activityNodes.put(alias,activityNode);
-            }
+        }
+        if (alias != null && !alias.isEmpty() && !activityNodes.containsKey(alias)) {
+            activityNodes.put(alias,activityNode);
         }
     }
 

@@ -69,7 +69,10 @@ public class PlantUmlUseCaseParser {
         useCaseDiagram.addSetElements(useCaseDiagram.getActors(), useCaseDiagram.getActorLookup());
         useCaseDiagram.setActorsCount(useCaseDiagram.getActors().size());
         useCaseDiagram.setElements(useCaseDiagram.getUseCasesCount() + useCaseDiagram.getActorsCount());
+        useCaseDiagram.getDiagramElements().addAll(useCaseDiagram.getUseCases());
+        useCaseDiagram.getDiagramElements().addAll(useCaseDiagram.getActors());
         useCaseDiagram.setLinksCount(useCaseDiagram.getLinks().size());
+        useCaseDiagram.setRelationships(useCaseDiagram.getLinksCount());
 
         return useCaseDiagram;
     }

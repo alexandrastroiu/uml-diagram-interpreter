@@ -19,8 +19,10 @@ public class FileReader {
 
         try {
             lines = Files.readAllLines(filePath);
-        } catch(IOException e) {
-            e.printStackTrace();
+        }
+        catch(IOException e) {
+            System.err.println("Error reading the file " + fileName);
+            System.exit(1);
         }
 
         return lines;

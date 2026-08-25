@@ -64,7 +64,7 @@ public class MermaidActivityParser {
         activityDiagram.setRelationships(activityDiagram.getControlFlows().size());
         activityDiagram.setActivitiesCount(activityDiagram.getElements());
         activityDiagram.setSwimlanesCount(activityDiagram.getSwimlanes().size());
-        activityDiagram.setConditionalNodes(activityDiagram.countNodes(ActivityNodeType.CONDITIONAL));
+        activityDiagram.setConditionalNodesCount(activityDiagram.countNodes(ActivityNodeType.CONDITIONAL));
 
         return activityDiagram;
     }
@@ -106,6 +106,16 @@ public class MermaidActivityParser {
             String activityAlias = trimmedLine.substring(0, index).trim();
             String activityName = MermaidParser.getMermaidElementName(trimmedLine.substring(index + 1));
             ActivityNodeType activityType = getActivityType(activityName);
+
+            if (activityType.equals(ActivityNodeType.START)) {
+                activityDiagram.setInitialStatesCount(activityDiagram.getInitialStatesCount() + 1);
+                activityName = activityName + activityDiagram.getInitialStatesCount();
+            }
+            else if (activityType.equals(ActivityNodeType.STOP)) {
+                activityDiagram.setFinalStatesCount(activityDiagram.getFinalStatesCount() + 1);
+                activityName = activityName + activityDiagram.getFinalStatesCount();
+            }
+
             ActivityNode activityNode = new ActivityNode(activityName, activityAlias, activityType, currentSwimlane.toString());
             activityDiagram.addActivity(activityNode);
         }
@@ -138,6 +148,7 @@ public class MermaidActivityParser {
             int indexEnd = trimmedLine.indexOf(">");
             String element1 = trimmedLine.substring(0, indexStart).trim();
             String element2 = trimmedLine.substring(indexEnd + 1).trim();
+            element2 = element2.contains("|") ? element2.substring(element2.lastIndexOf("|") + 1).trim() : element2;
             addControlFlowElement(activityDiagram, element1, currentSwimlane);
             addControlFlowElement(activityDiagram, element2, currentSwimlane);
             flow.setStart(activityDiagram.findActivity(element1));

@@ -61,8 +61,8 @@ public class StateDiagramParser {
         stateDiagram.addSetElements(stateDiagram.getStates(), stateDiagram.getStateLookup());
         stateDiagram.setForkCount(stateDiagram.countNodes(StateType.FORK));
         stateDiagram.setJoinCount(stateDiagram.countNodes(StateType.JOIN));
-        stateDiagram.setChoiceStates(stateDiagram.countNodes(StateType.CHOICE));
-        stateDiagram.setCompositeStates(stateDiagram.countNodes(StateType.COMPOSITE));
+        stateDiagram.setChoiceStatesCount(stateDiagram.countNodes(StateType.CHOICE));
+        stateDiagram.setCompositeStatesCount(stateDiagram.countNodes(StateType.COMPOSITE));
         stateDiagram.setElements(stateDiagram.countElements());
 
         return stateDiagram;
@@ -80,36 +80,41 @@ public class StateDiagramParser {
         if (isState(trimmedLine)) {
             State state = new State();
             int index1 = STATE_PATTERN.length();
-            String name = trimmedLine.substring(index1).trim();
+            String name = trimmedLine.substring(index1).replace("\"", "").trim();
             String stateAlias = "";
 
             if (trimmedLine.endsWith(COMPOSITE_PATTERN)) {
                 int index2 = name.indexOf(COMPOSITE_PATTERN);
-                name = name.substring(0, index2).trim();
+                name = name.substring(0, index2).replace("\"", "").trim();
 
                 state.setType(StateType.COMPOSITE);
             }
 
+            if (trimmedLine.contains(DESCRIPTION_PATTERN)) {
+                int index3 = name.indexOf(DESCRIPTION_PATTERN);
+                name = name.substring(0, index3).replace("\"", "").trim();
+            }
+
             if (trimmedLine.contains(COLOR_PATTERN)) {
-                int index3 = name.indexOf(COLOR_PATTERN);
-                name = name.substring(0, index3).trim();
+                int index4 = name.indexOf(COLOR_PATTERN);
+                name = name.substring(0, index4).replace("\"", "").trim();
             }
 
             for (String key : STEREOTYPES.keySet()) {
                 if (trimmedLine.contains(key)) {
-                    int index4 = name.indexOf(key);
-                    name = name.substring(0, index4).trim();
+                    int index5 = name.indexOf(key);
+                    name = name.substring(0, index5).replace("\"", "").trim();
 
                     state.setType(STEREOTYPES.get(key));
                 }
             }
 
             if (Pattern.matches(ALIAS_PATTERN, trimmedLine)) {
-                int index5 = name.indexOf(ALIAS);
-                int index6 = index5 + ALIAS.length();
+                int index6 = name.indexOf(ALIAS);
+                int index7 = index6 + ALIAS.length();
 
-                stateAlias = name.substring(index6).replace("\"", "").trim();
-                name = name.substring(0, index5).trim();
+                stateAlias = name.substring(index7).replace("\"", "").trim();
+                name = name.substring(0, index6).replace("\"", "").trim();
             }
 
             state.setName(name);
@@ -119,11 +124,11 @@ public class StateDiagramParser {
         else if (Pattern.matches(STATE_DESCRIPTION, trimmedLine)) {
             State state = new State();
             int index = trimmedLine.indexOf(DESCRIPTION_PATTERN);
-            String stateAlias = trimmedLine.substring(0, index).trim();
-            String name = trimmedLine.substring(index).trim();
+            String name = trimmedLine.substring(0, index).replace("\"", "").trim();
+            String description = trimmedLine.substring(index).replace("\"", "").trim();
 
             state.setName(name);
-            state.setAlias(stateAlias);
+            state.setDescription(description);
             stateDiagram.addState(state);
         }
     }
@@ -132,7 +137,7 @@ public class StateDiagramParser {
         if (language.equals(Language.MERMAID)) {
             if (Pattern.matches(STATE_ID_DEFINITION, trimmedLine)) {
                 State state = new State();
-                String name = trimmedLine.trim();
+                String name = trimmedLine.replace("\"", "").trim();
                 state.setName(name);
                 stateDiagram.addState(state);
             }
@@ -147,7 +152,8 @@ public class StateDiagramParser {
             String name;
 
             if (trimmedLine.startsWith(SPECIAL_STATE_PATTERN)) {
-                startState.setName("Initial State");
+                stateDiagram.setInitialStatesCount(stateDiagram.getInitialStatesCount() + 1);
+                startState.setName("Initial State" + stateDiagram.getInitialStatesCount());
                 startState.setType(StateType.INITIAL);
             }
             else {
@@ -172,7 +178,8 @@ public class StateDiagramParser {
             }
 
             if (name.endsWith(SPECIAL_STATE_PATTERN.trim())) {
-                endState.setName("Final State");
+                stateDiagram.setFinalStatesCount(stateDiagram.getFinalStatesCount() + 1);
+                endState.setName("Final State" + stateDiagram.getFinalStatesCount());
                 endState.setType(StateType.FINAL);
             } else {
                 endState.setName(name);

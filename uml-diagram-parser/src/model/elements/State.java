@@ -2,11 +2,14 @@ package model.elements;
 
 import enums.StateType;
 
+import java.util.Objects;
+
 public class State {
 
     private String name;
     private String alias;
     private StateType type;
+    private String description;
 
     // Constructor
 
@@ -14,6 +17,7 @@ public class State {
         this.name = "";
         this.alias = "";
         this.type = StateType.SIMPLE;
+        this.description = "";
     }
 
     // Getters, setters
@@ -41,6 +45,16 @@ public class State {
     public void setAlias(String alias) {
         if (!alias.isEmpty()) {
             this.alias = alias;
+        }
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        if (!description.isEmpty()) {
+            this.description = description;
         }
     }
 

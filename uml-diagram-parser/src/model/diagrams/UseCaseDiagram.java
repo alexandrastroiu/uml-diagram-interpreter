@@ -30,9 +30,9 @@ public class UseCaseDiagram extends UmlDiagram {
         this.useCases = new LinkedHashSet<>();
         this.diagramElements = new LinkedHashSet<>();
         this.links = new LinkedHashSet<>();
-        useCasesCount = 0;
-        actorsCount = 0;
-        linksCount = 0;
+        this.useCasesCount = 0;
+        this.actorsCount = 0;
+        this.linksCount = 0;
     }
 
     // Getters, setters

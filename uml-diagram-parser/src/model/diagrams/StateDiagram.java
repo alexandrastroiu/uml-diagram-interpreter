@@ -14,8 +14,10 @@ public class StateDiagram extends UmlDiagram {
     private int transitionCount;
     private int forkCount;
     private int joinCount;
-    private int choiceStates;
-    private int compositeStates;
+    private int initialStatesCount;
+    private int finalStatesCount;
+    private int choiceStatesCount;
+    private int compositeStatesCount;
 
     // Constructor
 
@@ -27,8 +29,10 @@ public class StateDiagram extends UmlDiagram {
         this.transitionCount = 0;
         this.forkCount = 0;
         this.joinCount = 0;
-        this.choiceStates = 0;
-        this.compositeStates = 0;
+        this.initialStatesCount = 0;
+        this.finalStatesCount = 0;
+        this.choiceStatesCount = 0;
+        this.compositeStatesCount = 0;
     }
 
     // Getters, setters
@@ -73,20 +77,20 @@ public class StateDiagram extends UmlDiagram {
         this.joinCount = joinCount;
     }
 
-    public int getChoiceStates() {
-        return choiceStates;
+    public int getChoiceStatesCount() {
+        return choiceStatesCount;
     }
 
-    public void setChoiceStates(int choiceStates) {
-        this.choiceStates = choiceStates;
+    public void setChoiceStatesCount(int choiceStatesCount) {
+        this.choiceStatesCount = choiceStatesCount;
     }
 
-    public int getCompositeStates() {
-        return compositeStates;
+    public int getCompositeStatesCount() {
+        return compositeStatesCount;
     }
 
-    public void setCompositeStates(int compositeStates) {
-        this.compositeStates = compositeStates;
+    public void setCompositeStatesCount(int compositeStatesCount) {
+        this.compositeStatesCount = compositeStatesCount;
     }
 
     public LinkedHashSet<State> getStates() {
@@ -95,6 +99,22 @@ public class StateDiagram extends UmlDiagram {
 
     public void setStates(LinkedHashSet<State> states) {
         this.states = states;
+    }
+
+    public int getInitialStatesCount() {
+        return initialStatesCount;
+    }
+
+    public void setInitialStatesCount(int initialStatesCount) {
+        this.initialStatesCount = initialStatesCount;
+    }
+
+    public int getFinalStatesCount() {
+        return finalStatesCount;
+    }
+
+    public void setFinalStatesCount(int finalStatesCount) {
+        this.finalStatesCount = finalStatesCount;
     }
 
     public int countNodes(StateType type) {
@@ -144,7 +164,7 @@ public class StateDiagram extends UmlDiagram {
     }
 
     public void printStates() {
-        states.stream().filter(state -> !state.getType().equals(StateType.FORK) &&  !state.getType().equals(StateType.JOIN) && !state.getType().equals(StateType.CHOICE)).forEach(state -> System.out.println(state.getName() + " - " + state.getType()));
+        states.stream().filter(state -> !state.getType().equals(StateType.FORK) &&  !state.getType().equals(StateType.JOIN) && !state.getType().equals(StateType.CHOICE)).forEach(state -> System.out.println(state.getName()));
     }
 
     public void printTransitions() {

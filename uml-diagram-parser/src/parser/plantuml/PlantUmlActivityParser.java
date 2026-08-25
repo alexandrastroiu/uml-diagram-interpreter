@@ -80,7 +80,7 @@ public class PlantUmlActivityParser {
         activityDiagram.setElements(activityDiagram.countElements());
         activityDiagram.setActivitiesCount(activityDiagram.getElements());
         activityDiagram.setSwimlanesCount(activityDiagram.getSwimlanes().size());
-        activityDiagram.setConditionalNodes(activityDiagram.countNodes(ActivityNodeType.CONDITIONAL));
+        activityDiagram.setConditionalNodesCount(activityDiagram.countNodes(ActivityNodeType.CONDITIONAL));
 
         return activityDiagram;
     }
@@ -136,14 +136,16 @@ public class PlantUmlActivityParser {
 
     private static void checkStart(ActivityDiagram activityDiagram, String trimmedLine, StringBuilder currentSwimlane, StringBuilder currentGroup) {
         if (trimmedLine.equals(START_PATTERN)) {
-            ActivityNode startNode = new ActivityNode("Start", ActivityNodeType.START, currentSwimlane.toString(), currentGroup.toString());
+            activityDiagram.setInitialStatesCount(activityDiagram.getInitialStatesCount() + 1);
+            ActivityNode startNode = new ActivityNode("Start" + activityDiagram.getInitialStatesCount(), ActivityNodeType.START, currentSwimlane.toString(), currentGroup.toString());
             activityDiagram.addActivity(startNode);
         }
     }
 
     private static void checkEnd(ActivityDiagram activityDiagram, String trimmedLine, StringBuilder currentSwimlane, StringBuilder currentGroup) {
         if (trimmedLine.equals(END_PATTERN.get(0)) || trimmedLine.equals(END_PATTERN.get(1))) {
-            ActivityNode endNode = new ActivityNode("Stop", ActivityNodeType.STOP, currentSwimlane.toString(), currentGroup.toString());
+            activityDiagram.setFinalStatesCount(activityDiagram.getFinalStatesCount() + 1);
+            ActivityNode endNode = new ActivityNode("Stop" + activityDiagram.getFinalStatesCount(), ActivityNodeType.STOP, currentSwimlane.toString(), currentGroup.toString());
             activityDiagram.addActivity(endNode);
         }
     }
